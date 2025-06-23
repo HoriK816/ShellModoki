@@ -3,9 +3,6 @@
 #define HOME_DIR "/home/horik/"
 #define HOME_DIR_MAC "/Users/horik"
 #define HOME_EXP_ENV "/2024/v24e3026"
-#define HISTORY_PATH "/home/horik/develop/os_lesson/kadai2/history.log"
-#define HISTORY_PATH_MAC "/Users/horik/develop/os_lesson/kadai2/history.log"
-#define HISTORY_PATH_EXP_ENV "/2024/v24e3026/os_lesson/kadai2/history.log"
 
 enum node_type{
     ROOT,
