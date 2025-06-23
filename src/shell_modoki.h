@@ -55,10 +55,4 @@ typedef struct{
     int value; // myshell supports only integer as a value of variables.
 }variable_define_node_t;
 
-typedef struct{
-    char **symbol_name;
-    int **values;
-    int number_of_records;
-}symbol_table_t;
-
 

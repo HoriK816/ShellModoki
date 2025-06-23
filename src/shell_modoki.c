@@ -8,6 +8,7 @@
 
 #include "tokenizer.h"
 #include "shell_modoki.h"
+#include "symbol_table.h"
 // #include "parser.h"
 
 void PrintPrompt();
@@ -22,16 +23,8 @@ void ExecTree(ast_node_t * node, symbol_table_t *symbol_table);
 pid_t ExecCommand(command_node_t *command_node);
 bool ExecBinaryOperator(binary_operator_node_t *binary_node);
 
-void StoreVaribale(variable_define_node_t *variable_node,
-                   symbol_table_t* symbol_table);
-
-void InitializeSymbolTable(symbol_table_t *symbol_table);
-
-void DumpSymbolTable(symbol_table_t *symbol_table);
-
-void FreeSymbolTable(symbol_table_t *symbol_table);
-
-int main(int argc, char** argv){
+int main(int argc, char** argv)
+{
 
     // symbol table
     /*symbol_table_t *symbol_table;*/
@@ -118,7 +111,8 @@ void ExecTree(ast_node_t * node, symbol_table_t *symbol_table)
     }
 }
 
-bool ExecBinaryOperator(binary_operator_node_t *binary_node){
+bool ExecBinaryOperator(binary_operator_node_t *binary_node)
+{
 
     bool result;
 
@@ -182,24 +176,23 @@ pid_t ExecCommand(command_node_t *command_node)
     
     command_pointer[0] = command_node->command;
 
-    for(int i=0;i<(command_node->number_of_args);i++){
+    for(int i=0;i<(command_node->number_of_args);i++)
         command_pointer[i+1] = (command_node->args)[i];
-    }
     command_pointer[command_node->number_of_args+1] = NULL;
 
     // exit
-    if(strcmp(command_pointer[0], "exit") == 0){
+    if(strcmp(command_pointer[0], "exit") == 0)
         exit(0);
-    }
 
     // history
-    if(strcmp(command_pointer[0], "history") == 0){
+    if(strcmp(command_pointer[0], "history") == 0)
         PrintHistory();
-    }
 
     // change directory
-    if(strcmp(command_pointer[0], "cd") == 0){
-        if(command_pointer[1] == NULL){
+    if(strcmp(command_pointer[0], "cd") == 0)
+    {
+        if(command_pointer[1] == NULL)
+        {
             chdir(HOME_EXP_ENV);
         }else{
             chdir(command_pointer[1]);
@@ -217,41 +210,9 @@ pid_t ExecCommand(command_node_t *command_node)
     return status;
 }
 
-void StoreVaribale(variable_define_node_t *variable_node,
-                   symbol_table_t* symbol_table){
 
-    char *name = variable_node->variable_name;
-
-    for(int i=0; i<symbol_table->number_of_records; i++){
-        if(strcmp(name, symbol_table->symbol_name[i]) == 0){
-            *symbol_table->values[i] = variable_node->value;
-            return;
-        }
-    }
-
-    // register new variable to the table
-    int last = symbol_table->number_of_records;
-    symbol_table->symbol_name[last] =  (char *)malloc(sizeof(char)*50);
-    if(symbol_table->symbol_name[last] == NULL){
-        fprintf(stderr,
-                "could not allocate for sufficient memory for symbol table");
-        exit(EXIT_FAILURE);
-    }
-
-    strcpy(symbol_table->symbol_name[last], name);
-
-    symbol_table->values[last] = (int *)malloc(sizeof(int));
-    if(symbol_table->values[last] == NULL){
-        fprintf(stderr,
-                "could not allocate sufficient memory for symbol table");
-        exit(EXIT_FAILURE);
-    }
-    *symbol_table->values[last] = variable_node->value;
-
-    symbol_table->number_of_records++;
-}
-
-char* GetUserInput(void){
+char* GetUserInput(void)
+{
 
     char *user_input;
     // user can use 10 commands at most
@@ -409,45 +370,4 @@ void PrintHistory()
     fprintf(stdout, "\n");
     fclose(history_file);
 }
-
-/*void InitializeSymbolTable(symbol_table_t *symbol_table)*/
-/*{*/
-    /*symbol_table->number_of_records = 0;*/
-    /*symbol_table->symbol_name = (char **)malloc(sizeof(char *) * 1024);*/
-    /*if(symbol_table->symbol_name == NULL){*/
-        /*fprintf(stderr, "could not allocate sufficient memory for symbol table");*/
-        /*exit(EXIT_FAILURE);*/
-    /*}*/
-
-    /*symbol_table->values = (int **)malloc(sizeof(int *) * 1024);*/
-    /*if(symbol_table->values == NULL){*/
-        /*fprintf(stderr, "could not allocate sufficient memory for symbol table");*/
-        /*exit(EXIT_FAILURE);*/
-    /*}*/
-/*}*/
-
-/*void FreeSymbolTable(symbol_table_t *symbol_table)*/
-/*{*/
-    /*for(int i=0; i<symbol_table->number_of_records; i++)*/
-    /*{*/
-        /*free(symbol_table->symbol_name[i]);*/
-        /*free(symbol_table->values[i]);*/
-    /*}*/
-    /*free(symbol_table->symbol_name);*/
-    /*free(symbol_table->values);*/
-
-    /*free(symbol_table);*/
-/*}*/
-
-
-/*// for debugging*/
-/*void DumpSymbolTable(symbol_table_t *symbol_table)*/
-/*{*/
-    /*printf("--------------symbol table--------------------\n");*/
-    /*for(int i=0; i<symbol_table->number_of_records; i++){*/
-        /*printf("%s : %d\n", symbol_table->symbol_name[i],*/
-                            /**symbol_table->values[i]);*/
-    /*}*/
-   /*printf("-----------------------------------------------\n"); */
-/*}*/
 
