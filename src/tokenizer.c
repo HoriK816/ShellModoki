@@ -116,7 +116,8 @@ int AddDoublePipeToTokenList(char **tokens, char *command_line, int cursor,
 }
 
 int AddEqualToTokenList(char **tokens, char *command_line, int cursor,
-                            int current_posision, int *token_counter){
+                            int current_posision, int *token_counter)
+{
     // separator ||
     *token_counter += 1;
 
@@ -140,14 +141,16 @@ int AddEqualToTokenList(char **tokens, char *command_line, int cursor,
 char** TokenizeOneLine(char *command_line)
 {
     char **tokens = (char **)malloc(sizeof(char*) * MAX_TOKENS);
-    if(tokens == NULL){
+    if(tokens == NULL)
+    {
         fprintf(stderr, "could not allocate sufficient memory for token");
         exit(EXIT_FAILURE);
-    }else{
+    }
+    else
+    {
         // initialize to NULL  to make it easier to counts the elments.
-        for(int i=0;i<MAX_TOKENS;i++){
+        for(int i=0;i<MAX_TOKENS;i++)
             tokens[i] = NULL;
-        }
     }
 
     int token_counter = 0;
@@ -157,9 +160,9 @@ char** TokenizeOneLine(char *command_line)
     // include teminatating NULL character.
     int line_len = strlen(command_line)+1;
 
-    for(int i=0;i<line_len;i++){
+    for(int i=0;i<line_len;i++)
+    {
     // have to check command_line[line_len] to record last word.
-    
         char cc = command_line[i];
         char next_cc = command_line[i+1];
 
@@ -197,31 +200,18 @@ char** TokenizeOneLine(char *command_line)
 
             cursor = AddEqualToTokenList(tokens, command_line,
                                             cursor, i, &token_counter);
-
         }
-
     }
     // for debugging 
     // DumpTokenizeResult(tokens, token_counter);
-
     return tokens;
 }
 
-
-// for debugging
-void DumpTokenizeResult(char **tokens, int number_of_tokens){
-
-    printf("there are %d tokens.\n", number_of_tokens);
-    for(int i=0; i<number_of_tokens;i++){
-        printf("%s\n", tokens[i]);
-    }
-}
-
-int CountTokens(char **tokens){
+int CountTokens(char **tokens)
+{
     int number_of_tokens = 0;
     while(tokens[number_of_tokens] != NULL)
         number_of_tokens++;
-
     return number_of_tokens;
 }
 

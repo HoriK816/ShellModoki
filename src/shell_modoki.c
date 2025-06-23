@@ -265,8 +265,10 @@ char** GetUserCommand(char *buffer)
             word_counter++;
             
             if(commands[word_counter] == NULL){
-                char **ptr = (char**)realloc(commands, sizeof(char*) * word_counter);
-                if(ptr == NULL){
+                char **ptr = (char**)realloc(commands,
+                                             sizeof(char*) * word_counter);
+                if(ptr == NULL)
+                {
                     fprintf(stderr, "realloc error\n");
                     exit(EXIT_FAILURE);
                 }
@@ -285,20 +287,23 @@ void PrintPrompt()
 {
     // get login is not working on WSL
     char *user_name;
-    if((user_name = getlogin()) == NULL){
+    if((user_name = getlogin()) == NULL)
+    {
         fprintf(stderr, "getlogin() error\n");
         exit(EXIT_FAILURE);
     }
 
     int rc;
     char host_name[256];
-    if((rc = gethostname(host_name, sizeof(host_name))) == -1){
+    if((rc = gethostname(host_name, sizeof(host_name))) == -1)
+    {
         fprintf(stderr, "gethostname() error\n");
         exit(EXIT_FAILURE);
     }
     
     char *current_dir;
-    if((current_dir = getcwd(NULL, 0)) == NULL){
+    if((current_dir = getcwd(NULL, 0)) == NULL)
+    {
         fprintf(stderr, "getcwd() error\n");
         exit(EXIT_FAILURE);
     }
@@ -317,11 +322,8 @@ void PrintPrompt()
 
 size_t CountCommand(char **commands)
 {
-
     size_t counter = 0;
-
     while(commands[counter] != NULL)
         counter++;
-
     return counter;
 }
