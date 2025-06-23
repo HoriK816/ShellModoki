@@ -33,16 +33,17 @@ void FreeSymbolTable(symbol_table_t *symbol_table);
 
 int main(int argc, char** argv){
 
-    symbol_table_t *symbol_table;
-    symbol_table = (symbol_table_t *)malloc(sizeof(symbol_table_t));
-    if(symbol_table == NULL)
-    {
-        fprintf(stderr, 
-                "could not allocate sufficient memory for symbol_table");
-        exit(EXIT_FAILURE);
-    }
+    // symbol table
+    /*symbol_table_t *symbol_table;*/
+    /*symbol_table = (symbol_table_t *)malloc(sizeof(symbol_table_t));*/
+    /*if(symbol_table == NULL)*/
+    /*{*/
+        /*fprintf(stderr, */
+                /*"could not allocate sufficient memory for symbol_table");*/
+        /*exit(EXIT_FAILURE);*/
+    /*}*/
 
-    InitializeSymbolTable(symbol_table);
+    /*InitializeSymbolTable(symbol_table);*/
 
     while(true)
     {
@@ -51,7 +52,7 @@ int main(int argc, char** argv){
         char *user_input;
         user_input = GetUserInput();
 
-        RecordCommand(user_input);
+        // RecordCommand(user_input);
 
         char** command_tokens;
         command_tokens = TokenizeOneLine(user_input);
@@ -59,27 +60,27 @@ int main(int argc, char** argv){
         int number_of_tokens = CountTokens(command_tokens);
 
         // for debugging
-        // DumpTokenizeResult(command_tokens,number_of_tokens);
+        DumpTokenizeResult(command_tokens,number_of_tokens);
 
-        ast_node_t *root;
-        root = BuildParseTree(command_tokens, number_of_tokens, symbol_table);
+        /*ast_node_t *root;*/
+        /*root = BuildParseTree(command_tokens, number_of_tokens, symbol_table);*/
 
-        // for debugging
-        // DumpParseTree(root, 0);
+        /*// for debugging*/
+        /*// DumpParseTree(root, 0);*/
 
-        ExecTree(root, symbol_table);
+        /*ExecTree(root, symbol_table);*/
         
-        // for debugging
-        //DumpSymbolTable(symbol_table);
+        /*// for debugging*/
+        /*//DumpSymbolTable(symbol_table);*/
 
-        // free
-        for(int i=0; i<number_of_tokens; i++)
-            free(command_tokens[i]);
-        free(command_tokens);
+        /*// free*/
+        /*for(int i=0; i<number_of_tokens; i++)*/
+            /*free(command_tokens[i]);*/
+        /*free(command_tokens);*/
 
-        FreeTree(root);
+        /*FreeTree(root);*/
     }
-    FreeSymbolTable(symbol_table);
+    /*FreeSymbolTable(symbol_table);*/
 
     return 0;
 }
