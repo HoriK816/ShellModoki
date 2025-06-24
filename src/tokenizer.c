@@ -171,7 +171,7 @@ char** TokenizeOneLine(char *command_line)
                                         cursor, i, &token_counter);
 
         }else if(cc == '&' && next_cc == '&'){
-            // call AddWordToTokenList to add word before && separator.
+            // call AddWordToTokenList to add word before '&&' separator.
             cursor = AddWordToTokenList(tokens, command_line,
                                         cursor, i, &token_counter);
 
@@ -180,21 +180,21 @@ char** TokenizeOneLine(char *command_line)
 
 
         }else if(cc == '|' && next_cc == '|'){
-            // call AddWordToTokenList to add word before || separator.
+            // call AddWordToTokenList to add word before '||' separator.
             cursor = AddWordToTokenList(tokens, command_line,
                                         cursor, i, &token_counter);
 
             cursor = AddDoublePipeToTokenList(tokens, command_line,
                                                     cursor, i, &token_counter);
         }else if(cc == ';'){
-            // call AddWordToTokenList to add word before ; separator.
+            // call AddWordToTokenList to add word before ';' separator.
             cursor = AddWordToTokenList(tokens, command_line,
                                         cursor, i, &token_counter);
 
             cursor = AddSemicolonToTokenList(tokens, command_line,
                                             cursor, i, &token_counter);
         }else if(cc == '='){
-            // call AddWrodToTokenList to add word before = separator.
+            // call AddWrodToTokenList to add word before '=' separator.
             cursor = AddWordToTokenList(tokens, command_line,
                                         cursor, i, &token_counter);
 

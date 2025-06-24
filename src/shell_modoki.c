@@ -314,8 +314,7 @@ void PrintPrompt()
                                       current_dir);
 
     // prompt for wsl env 
-    /*fprintf(stdout, " @ %s %s]#", host_name, current_dir);*/
-
+    /* fprintf(stdout, " @ %s %s]#", host_name, current_dir);*/
     // free(user_name);
     free(current_dir);
 }
