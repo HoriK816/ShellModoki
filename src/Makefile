@@ -2,11 +2,11 @@
 CC = gcc
 CFLAGS = -Wall -g
 # path
-TARGETDIR = ./bin/
-OBJECTDIR = ./obj/
+TARGETDIR = ../bin/
+OBJECTDIR = ../obj/
 
 TARGET = $(addprefix $(TARGETDIR), myshell)
-SOURCES = shell_modoki.c tokenizer.c 
+SOURCES = shell_modoki.c tokenizer.c parser.c debug_functions.c history.c symbol_table.c 
 OBJECTS = $(addprefix $(OBJECTDIR), $(SOURCES:.c=.o))
 
 all: $(TARGETDIR) $(OBJECTDIR) $(TARGET)
@@ -18,10 +18,10 @@ $(TARGET): $(OBJECTS)
 	$(CC) $^  -o $@
 
 $(TARGETDIR):
-	mkdir ./bin
+	mkdir ../bin
 
 $(OBJECTDIR):
-	mkdir ./obj
+	mkdir ../obj
 
 clean:
 	rm -rf $(OBJECTDIR) $(TARGETDIR)
