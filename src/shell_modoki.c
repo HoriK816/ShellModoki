@@ -11,7 +11,6 @@
 #include "symbol_table.h"
 #include "parser.h"
 #include "history.h"
-#include "executor.h"
 
 void PrintPrompt();
 
