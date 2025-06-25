@@ -17,16 +17,7 @@ size_t CountCommand(char **commands);
 int main(int argc, char** argv)
 {
     // symbol table
-    symbol_table_t *symbol_table;
-    symbol_table = (symbol_table_t *)malloc(sizeof(symbol_table_t));
-    if(symbol_table == NULL)
-    {
-        fprintf(stderr, 
-                "could not allocate sufficient memory for symbol_table");
-        exit(EXIT_FAILURE);
-    }
-
-    InitializeSymbolTable(symbol_table);
+    symbol_table_t *symbol_table = CreateSymbolTable();
 
     while(true)
     {

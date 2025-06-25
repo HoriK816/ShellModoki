@@ -7,7 +7,7 @@ typedef struct{
     int number_of_records;
 }symbol_table_t;
 
-
+symbol_table_t* CreateSymbolTable(void);
 void InitializeSymbolTable(symbol_table_t *symbol_table);
 void FreeSymbolTable(symbol_table_t *symbol_table);
 

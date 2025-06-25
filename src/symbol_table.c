@@ -5,6 +5,20 @@
 
 #include "symbol_table.h"
 
+symbol_table_t* CreateSymbolTable(void)
+{
+    symbol_table_t *symbol_table;
+    symbol_table = (symbol_table_t *)malloc(sizeof(symbol_table_t));
+    if(symbol_table == NULL)
+    {
+        fprintf(stderr, 
+                "could not allocate sufficient memory for symbol_table");
+        exit(EXIT_FAILURE);
+    }
+    InitializeSymbolTable(symbol_table);
+    return symbol_table;
+}
+
 void InitializeSymbolTable(symbol_table_t *symbol_table)
 {
     symbol_table->number_of_records = 0;
