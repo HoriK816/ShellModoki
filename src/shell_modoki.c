@@ -10,6 +10,95 @@
 #include "printer.h"
 #include "executor.h"
 
+
+int main(int argc, char** argv)
+{
+    // symbol table
+    symbol_table_t *symbol_table = CreateSymbolTable();
+
+    while(true)
+    {
+        PrintPrompt();
+
+        char **command_tokens;
+        int number_of_tokens = 0;
+
+        bool is_ended;
+        do
+        {
+            // get user input
+            char* user_input_line = GetUserInputLine();
+            RecordCommandHistory(user_input_line);
+
+            // tokenize
+            char** tokens_in_line        = TokenizeOneLine(user_input_line);
+            int number_of_tokens_in_line = CountTokens(tokens_in_line);
+
+            // for debugging
+            DumpTokenizeResult(tokens_in_line, number_of_tokens_in_line);
+
+            is_ended = IsPromptEnded(tokens_in_line, number_of_tokens);
+            
+            // for debugging
+            if(is_ended)
+                printf("user's input is ended\n");
+            else
+                printf("user's input is not ended. continue ... \n");
+
+            // free
+            for(int i=0; i<number_of_tokens; i++)
+                free(tokens_in_line[i]);
+            free(tokens_in_line);
+        }
+        while(!is_ended);
+
+        /*ast_node_t *root;*/
+        /*root = BuildParseTree(command_tokens, number_of_tokens, symbol_table);*/
+
+        /*// for debugging*/
+        /*DumpParseTree(root, 0);*/
+
+        /*ExecTree(root, symbol_table);*/
+        
+        // for debugging
+        //DumpSymbolTable(symbol_table);
+
+        /*FreeTree(root);*/
+    }
+    FreeSymbolTable(symbol_table);
+    return 0;
+}
+
+char* GetUserInputLine(void)
+{
+    char *user_input;
+    // user can use 10 commands at most
+    user_input = (char*)malloc(sizeof(char) * 100); 
+    if(user_input == NULL){
+        fprintf(stderr,
+                "could not allocate sufficient memory for user's input");
+        exit(EXIT_FAILURE);
+    }
+
+    if(fgets(user_input, 100, stdin) == NULL)
+        exit(0);
+
+    int len = strlen(user_input);
+    // replace from \n to \0
+    if(user_input[len-1] == '\n')
+        user_input[len-1] = '\0';
+
+    return user_input;
+}
+
+size_t CountCommand(char **commands)
+{
+    size_t counter = 0;
+    while(commands[counter] != NULL)
+        counter++;
+    return counter;
+}
+
 bool IsPromptEnded(char **tokens, int number_of_tokens)
 {
     // TODO: There are more indicators in sh that also should be supported.
@@ -70,83 +159,3 @@ bool IsPromptEnded(char **tokens, int number_of_tokens)
 }
 
 
-int main(int argc, char** argv)
-{
-    // symbol table
-    symbol_table_t *symbol_table = CreateSymbolTable();
-
-    while(true)
-    {
-        PrintPrompt();
-
-        char *user_input_line;
-        user_input_line = GetUserInputLine();
-
-        // RecordCommandHistory(user_input);
-
-        char** tokens_in_line;
-        tokens_in_line = TokenizeOneLine(user_input_line);
-        int number_of_tokens = CountTokens(tokens_in_line);
-
-        // for debugging
-        DumpTokenizeResult(tokens_in_line, number_of_tokens);
-
-        bool is_ended = IsPromptEnded(tokens_in_line, number_of_tokens);
-    
-        if(is_ended)
-            printf("user's input is ended\n");
-        else
-            printf("user's input is not ended. continue ... \n");
-
-
-        /*ast_node_t *root;*/
-        /*root = BuildParseTree(command_tokens, number_of_tokens, symbol_table);*/
-
-        /*// for debugging*/
-        /*DumpParseTree(root, 0);*/
-
-        /*ExecTree(root, symbol_table);*/
-        
-        // for debugging
-        //DumpSymbolTable(symbol_table);
-
-        // free
-        for(int i=0; i<number_of_tokens; i++)
-            free(tokens_in_line[i]);
-        free(tokens_in_line);
-
-        /*FreeTree(root);*/
-    }
-    FreeSymbolTable(symbol_table);
-    return 0;
-}
-
-char* GetUserInputLine(void)
-{
-    char *user_input;
-    // user can use 10 commands at most
-    user_input = (char*)malloc(sizeof(char) * 100); 
-    if(user_input == NULL){
-        fprintf(stderr,
-                "could not allocate sufficient memory for user's input");
-        exit(EXIT_FAILURE);
-    }
-
-    if(fgets(user_input, 100, stdin) == NULL)
-        exit(0);
-
-    int len = strlen(user_input);
-    // replace from \n to \0
-    if(user_input[len-1] == '\n')
-        user_input[len-1] = '\0';
-
-    return user_input;
-}
-
-size_t CountCommand(char **commands)
-{
-    size_t counter = 0;
-    while(commands[counter] != NULL)
-        counter++;
-    return counter;
-}

@@ -64,3 +64,4 @@ typedef struct
 
 char* GetUserInputLine();
 size_t CountCommand(char **commands);
+bool IsPromptEnded(char **tokens, int number_of_tokens);
