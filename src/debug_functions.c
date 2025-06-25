@@ -6,6 +6,7 @@
 #include<sys/wait.h>
 #include<stdbool.h>
 
+#include "debug_functions.h"
 
 // for debugging tokenizer 
 void DumpTokenizeResult(char **tokens, int number_of_tokens)
@@ -28,3 +29,78 @@ void DumpSymbolTable(symbol_table_t *symbol_table)
    printf("-----------------------------------------------\n"); 
 }
 
+// for debugging
+void DumpParseTree(ast_node_t *node, int level)
+{
+    // dump itself
+    if(node->type == ROOT)
+    {
+        // root
+        printf("root\n");
+    }
+    else if(node->type == COMMAND)
+    {   
+        // command
+        command_node_t *command_node;
+        command_node = (command_node_t*)node;
+        for(int i=0; i<level;i++)
+            printf("\t");
+        printf("command name : %s\n", command_node->command);
+
+        for(int j=0; j<command_node->number_of_args;j++)
+        {
+            for(int i=0; i<level;i++)
+                printf("\t");
+            printf("arg : %s\n", command_node->args[j]);
+        }
+        return;
+
+    }
+    else if(node->type == BINARY_OPERATION)
+    {
+        // && , || , ;
+        binary_operator_node_t* binary_node;
+        binary_node = (binary_operator_node_t*)node;
+        
+        for(int i=0; i<level;i++)
+            printf("\t");
+        printf("operator name : %s\n", binary_node->operation);
+        level++; 
+
+        // left
+        DumpParseTree(binary_node->left, level);
+        // right
+        DumpParseTree(binary_node->right, level);
+        return;
+
+    }
+    else if(node->type ==  VARIABLE_DIFINITION)
+    {
+        variable_define_node_t *variable_node;
+        variable_node = (variable_define_node_t*)node;
+
+        for(int i=0; i<level;i++)
+            printf("\t");
+        printf("variable name : %s\n", variable_node->variable_name);
+
+        for(int i=0; i<level;i++)
+            printf("\t");
+        printf("value : %d\n", variable_node->value);
+        return;
+
+    }
+    else
+    {
+        // unknown
+        printf("unknown type\n");
+        return;
+    }
+
+    // dump children 
+    for(int i=0;i<node->number_of_children;i++)
+    {
+        ast_node_t *next_node;
+        next_node = (struct ast_node_t *)node->children[i];
+        DumpParseTree(next_node, ++level);
+    }
+}
