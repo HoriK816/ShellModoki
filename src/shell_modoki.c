@@ -9,14 +9,13 @@
 #include "parser.h"
 #include "history.h"
 #include "printer.h"
+#include "executor.h"
 
 char* GetUserInput();
-char** GetUserCommand(char *buffer);
 size_t CountCommand(char **commands);
 
 int main(int argc, char** argv)
 {
-
     // symbol table
     symbol_table_t *symbol_table;
     symbol_table = (symbol_table_t *)malloc(sizeof(symbol_table_t));
@@ -69,7 +68,6 @@ int main(int argc, char** argv)
     return 0;
 }
 
-
 char* GetUserInput(void)
 {
 
@@ -92,55 +90,6 @@ char* GetUserInput(void)
         user_input[len-1] = '\0';
 
     return user_input;
-}
-
-
-char** GetUserCommand(char *buffer)
-{
-    char **commands;
-    // user can use 10 commands at most
-    commands = (char**)malloc(sizeof(char*) * 10); 
-    
-    if(commands == NULL){
-        fprintf(stderr,
-                "could not allocate sufficient memory for command buffer");
-        exit(EXIT_FAILURE);
-    }
-
-    if(fgets(buffer, 80, stdin) == NULL)
-        exit(0);
-
-    int len = strlen(buffer);
-    // replace from \n to \0
-    if(buffer[len-1] == '\n')
-        buffer[len-1] = '\0';
-
-    int word_counter = 0;
-
-    if(1<len){
-        // separator ; 
-        commands[0] = strtok(buffer,";");
-
-        char *next_command;
-        while((next_command = strtok(NULL, ";")) != NULL){
-            word_counter++;
-            
-            if(commands[word_counter] == NULL){
-                char **ptr = (char**)realloc(commands,
-                                             sizeof(char*) * word_counter);
-                if(ptr == NULL)
-                {
-                    fprintf(stderr, "realloc error\n");
-                    exit(EXIT_FAILURE);
-                }
-                commands = ptr;
-            }
-        }
-
-    }else{
-        commands = NULL;
-    }
-    return commands;
 }
 
 size_t CountCommand(char **commands)
