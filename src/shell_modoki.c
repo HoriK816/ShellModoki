@@ -44,10 +44,10 @@ int main(int argc, char** argv)
 
         ExecTree(root, symbol_table);
         
-        /*// for debugging*/
-        /*//DumpSymbolTable(symbol_table);*/
+        // for debugging
+        //DumpSymbolTable(symbol_table);
 
-        /*// free*/
+        // free
         for(int i=0; i<number_of_tokens; i++)
             free(command_tokens[i]);
         free(command_tokens);
@@ -61,7 +61,6 @@ int main(int argc, char** argv)
 
 char* GetUserInput(void)
 {
-
     char *user_input;
     // user can use 10 commands at most
     user_input = (char*)malloc(sizeof(char) * 100); 
@@ -70,7 +69,6 @@ char* GetUserInput(void)
                 "could not allocate sufficient memory for user's input");
         exit(EXIT_FAILURE);
     }
-
 
     if(fgets(user_input, 100, stdin) == NULL)
         exit(0);
