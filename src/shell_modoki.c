@@ -1,26 +1,18 @@
 #include<stdio.h>
 #include<string.h>
 #include<stdlib.h>
-#include<unistd.h>
-#include<sys/types.h>
-#include<sys/wait.h>
 #include<stdbool.h>
 
-#include "tokenizer.h"
 #include "shell_modoki.h"
 #include "symbol_table.h"
+#include "tokenizer.h"
 #include "parser.h"
 #include "history.h"
-
-void PrintPrompt();
+#include "printer.h"
 
 char* GetUserInput();
 char** GetUserCommand(char *buffer);
 size_t CountCommand(char **commands);
-
-void ExecTree(ast_node_t * node, symbol_table_t *symbol_table);
-pid_t ExecCommand(command_node_t *command_node);
-bool ExecBinaryOperator(binary_operator_node_t *binary_node);
 
 int main(int argc, char** argv)
 {
@@ -149,43 +141,6 @@ char** GetUserCommand(char *buffer)
         commands = NULL;
     }
     return commands;
-}
-
-
-void PrintPrompt()
-{
-    // get login is not working on WSL
-    char *user_name;
-    if((user_name = getlogin()) == NULL)
-    {
-        fprintf(stderr, "getlogin() error\n");
-        exit(EXIT_FAILURE);
-    }
-
-    int rc;
-    char host_name[256];
-    if((rc = gethostname(host_name, sizeof(host_name))) == -1)
-    {
-        fprintf(stderr, "gethostname() error\n");
-        exit(EXIT_FAILURE);
-    }
-    
-    char *current_dir;
-    if((current_dir = getcwd(NULL, 0)) == NULL)
-    {
-        fprintf(stderr, "getcwd() error\n");
-        exit(EXIT_FAILURE);
-    }
-
-    // this prompt is not working on WSL
-    fprintf(stdout, "[%s@ %s %s ]$ ", user_name,
-                                      host_name,
-                                      current_dir);
-
-    // prompt for wsl env 
-    /* fprintf(stdout, " @ %s %s]#", host_name, current_dir);*/
-    // free(user_name);
-    free(current_dir);
 }
 
 size_t CountCommand(char **commands)

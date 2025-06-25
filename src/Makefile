@@ -6,7 +6,8 @@ TARGETDIR = ../bin/
 OBJECTDIR = ../obj/
 
 TARGET = $(addprefix $(TARGETDIR), myshell)
-SOURCES = shell_modoki.c tokenizer.c parser.c debug_functions.c history.c symbol_table.c executor.c
+SOURCES = shell_modoki.c tokenizer.c parser.c debug_functions.c history.c \
+		  symbol_table.c executor.c printer.c
 OBJECTS = $(addprefix $(OBJECTDIR), $(SOURCES:.c=.o))
 
 all: $(TARGETDIR) $(OBJECTDIR) $(TARGET)
