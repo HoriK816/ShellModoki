@@ -21,6 +21,7 @@ int main(int argc, char** argv)
         PrintPrompt();
 
         char **command_tokens;
+        command_tokens = (char **)malloc(sizeof(char*) * 100);
         int number_of_tokens = 0;
 
         bool is_ended;
@@ -34,10 +35,16 @@ int main(int argc, char** argv)
             char** tokens_in_line        = TokenizeOneLine(user_input_line);
             int number_of_tokens_in_line = CountTokens(tokens_in_line);
 
-            // for debugging
-            DumpTokenizeResult(tokens_in_line, number_of_tokens_in_line);
+            for(int i=0; i<number_of_tokens_in_line; i++) 
+            {
+                command_tokens[number_of_tokens] = tokens_in_line[i];     
+                number_of_tokens++;
+            }
 
-            is_ended = IsPromptEnded(tokens_in_line, number_of_tokens);
+            // for debugging
+            DumpTokenizeResult(command_tokens, number_of_tokens);
+
+            is_ended = IsPromptEnded(command_tokens, number_of_tokens);
             
             // for debugging
             if(is_ended)
@@ -46,9 +53,9 @@ int main(int argc, char** argv)
                 printf("user's input is not ended. continue ... \n");
 
             // free
-            for(int i=0; i<number_of_tokens; i++)
-                free(tokens_in_line[i]);
-            free(tokens_in_line);
+            /*for(int i=0; i<number_of_tokens; i++)*/
+                /*free(tokens_in_line[i]);*/
+            /*free(tokens_in_line);*/
         }
         while(!is_ended);
 
@@ -74,7 +81,8 @@ char* GetUserInputLine(void)
     char *user_input;
     // user can use 10 commands at most
     user_input = (char*)malloc(sizeof(char) * 100); 
-    if(user_input == NULL){
+    if(user_input == NULL)
+    {
         fprintf(stderr,
                 "could not allocate sufficient memory for user's input");
         exit(EXIT_FAILURE);
