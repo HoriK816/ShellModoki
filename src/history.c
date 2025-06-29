@@ -5,7 +5,7 @@
 
 void RecordCommandHistory(char *command)
 {
-    FILE *history_file = fopen(HISTORY_PATH_EXP_ENV, "a");
+    FILE *history_file = fopen(HISTORY_PATH, "a");
 
     // record command to the history file
     fwrite(command, sizeof(char), strlen(command), history_file);
@@ -18,7 +18,7 @@ void RecordCommandHistory(char *command)
 
 void PrintHistory()
 {
-    FILE *history_file = fopen(HISTORY_PATH_EXP_ENV, "r");
+    FILE *history_file = fopen(HISTORY_PATH, "r");
 
     char cc;
     char next_cc;
