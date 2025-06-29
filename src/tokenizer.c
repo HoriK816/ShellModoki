@@ -13,8 +13,7 @@ char** TokenizeCommand(char *command)
         exit(EXIT_FAILURE);
     }
 
-    // tokenize the command string
-    tokens[0] = strtok(command, " "); 
+    // tokenize the command string tokens[0] = strtok(command, " "); 
 
     for(int i=1;;i++)
     {
@@ -166,11 +165,13 @@ char** TokenizeOneLine(char *command_line)
         char cc = command_line[i];
         char next_cc = command_line[i+1];
 
-        if(cc == ' ' || cc == '\0'){
+        if(cc == ' ' || cc == '\0')
+        {
             cursor = AddWordToTokenList(tokens, command_line,
                                         cursor, i, &token_counter);
 
-        }else if(cc == '&' && next_cc == '&'){
+        }
+        else if(cc == '&' && next_cc == '&'){
             // call AddWordToTokenList to add word before '&&' separator.
             cursor = AddWordToTokenList(tokens, command_line,
                                         cursor, i, &token_counter);
@@ -179,21 +180,27 @@ char** TokenizeOneLine(char *command_line)
                                                     cursor, i, &token_counter);
 
 
-        }else if(cc == '|' && next_cc == '|'){
+        }
+        else if(cc == '|' && next_cc == '|')
+        {
             // call AddWordToTokenList to add word before '||' separator.
             cursor = AddWordToTokenList(tokens, command_line,
                                         cursor, i, &token_counter);
 
             cursor = AddDoublePipeToTokenList(tokens, command_line,
                                                     cursor, i, &token_counter);
-        }else if(cc == ';'){
+        }
+        else if(cc == ';')
+        {
             // call AddWordToTokenList to add word before ';' separator.
             cursor = AddWordToTokenList(tokens, command_line,
                                         cursor, i, &token_counter);
 
             cursor = AddSemicolonToTokenList(tokens, command_line,
                                             cursor, i, &token_counter);
-        }else if(cc == '='){
+        }
+        else if(cc == '=')
+        {
             // call AddWrodToTokenList to add word before '=' separator.
             cursor = AddWordToTokenList(tokens, command_line,
                                         cursor, i, &token_counter);
@@ -202,8 +209,6 @@ char** TokenizeOneLine(char *command_line)
                                             cursor, i, &token_counter);
         }
     }
-    // for debugging 
-    // DumpTokenizeResult(tokens, token_counter);
     return tokens;
 }
 
