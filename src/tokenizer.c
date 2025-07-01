@@ -162,7 +162,6 @@ int AddDoubleOpenParenToTokenList(char **tokens, char *command_line, int cursor,
     return cursor;
 }
 
-
 int AddDoubleCloseParenToTokenList(char **tokens, char *command_line, int cursor,
                             int current_posision, int *token_counter)
 {
