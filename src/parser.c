@@ -11,13 +11,15 @@ ast_node_t* BuildParseTree(char **tokens, int number_of_tokens,
     // prepare the root node
     ast_node_t *root;
     root = (ast_node_t*)malloc(sizeof(ast_node_t));
-    if(root == NULL){
+    if(root == NULL)
+    {
         fprintf(stderr, "could not sufficient memory for ast_node");
         exit(EXIT_FAILURE);
     }
 
     root->type = ROOT;
     root->number_of_children = 0;
+
     // 100 is a tentative value
     root->children = (ast_node_t**)malloc(sizeof(ast_node_t*) * 100);
     if(root->children == NULL)
@@ -37,23 +39,29 @@ ast_node_t* BuildParseTree(char **tokens, int number_of_tokens,
                cursor = ParseCommand(tokens, root, cursor, number_of_tokens,
                                      symbol_table);
                break;
+
            case PARSE_SEMICOLON:
                break;
+
            case PARSE_AND:
-                cursor = ParseAND(tokens, root, cursor, number_of_tokens,
-                                  symbol_table); 
+               cursor = ParseAND(tokens, root, cursor, number_of_tokens,
+                                 symbol_table); 
                break;
+
            case PARSE_OR:
                 cursor = ParseOR(tokens, root, cursor, number_of_tokens,
                                  symbol_table);
                break;
+
            case PARSE_VARIABLE_DIFINITION:
                cursor = ParseVaribleDifinition(tokens, root, cursor,
-                                                number_of_tokens);
+                                               number_of_tokens);
                break;
+
            case PARSE_VARIABLE:
-                ExtractVariable(tokens, cursor, symbol_table);
+               ExtractVariable(tokens, cursor, symbol_table);
                break;
+
         }
     }
     return root;
@@ -63,7 +71,6 @@ ast_node_t* BuildParseTree(char **tokens, int number_of_tokens,
 enum read_mode DecideNextMode(char **tokens, int cursor, int number_of_tokens)
 {
     enum read_mode next_mode;
-
     char *token = tokens[cursor];
 
     if(strcmp(token, ";") == 0)
@@ -256,7 +263,6 @@ int ParseAND(char **tokens, ast_node_t *node,
             break;
     }
     return cursor;
-
 }
 
 int ParseOR(char **tokens, ast_node_t *node,
@@ -316,7 +322,6 @@ int ParseOR(char **tokens, ast_node_t *node,
             break;
     }
     return cursor;
-
 }
 
 int ParseVaribleDifinition(char **tokens, ast_node_t *node,
@@ -352,6 +357,33 @@ int ParseVaribleDifinition(char **tokens, ast_node_t *node,
     }
     // there are "variable_name", "=" and "value" , so add 3
     cursor += 3;
+
+    return cursor;
+}
+
+int ParseCondition(char **tokens, ast_node_t *node, 
+             int current_cursor, int number_of_tokens)
+{
+    int cursor = current_cursor;
+    condition_node_t *condition_node 
+        = (condition_node_t*)malloc(sizeof(condition_node_t));
+
+    cursor += 1; // [
+    
+    condition_node->operand1 = atoi(tokens[cursor]);
+    
+    cursor += 1; // operand 1
+
+    // 10 is a tentative value
+    condition_node->operation = (char*)malloc(sizeof(char) * 10); 
+    condition_node->operation = tokens[cursor];
+
+    cursor += 1; // operation
+                 
+    condition_node->operand2 = atoi(tokens[cursor]);
+    cursor += 1; // operand 2
+                 
+    cursor += 1; // ]
 
     return cursor;
 }
