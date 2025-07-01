@@ -52,12 +52,13 @@ int main(int argc, char** argv)
             else
                 printf("user's input is not ended. continue ... \n");
 
-            // free
-            /*for(int i=0; i<number_of_tokens; i++)*/
-                /*free(tokens_in_line[i]);*/
-            /*free(tokens_in_line);*/
         }
         while(!is_ended);
+
+        // free tokens
+        for(int i=0; i<number_of_tokens; i++)
+            free(command_tokens[i]);
+        free(command_tokens);
 
         /*ast_node_t *root;*/
         /*root = BuildParseTree(command_tokens, number_of_tokens, symbol_table);*/
