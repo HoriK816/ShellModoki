@@ -13,7 +13,8 @@ char** TokenizeCommand(char *command)
         exit(EXIT_FAILURE);
     }
 
-    // tokenize the command string tokens[0] = strtok(command, " "); 
+    // tokenize the command string
+    tokens[0] = strtok(command, " "); 
 
     for(int i=1;;i++)
     {
@@ -73,7 +74,8 @@ int AddSemicolonToTokenList(char **tokens, char *command_line, int cursor,
 }
 
 int AddDoubleAmpersandToTokenList(char **tokens, char *command_line, int cursor,
-                            int current_posision, int *token_counter){
+                            int current_posision, int *token_counter)
+{
     // separator &&
     *token_counter += 1;
 
@@ -93,7 +95,8 @@ int AddDoubleAmpersandToTokenList(char **tokens, char *command_line, int cursor,
 }
 
 int AddDoublePipeToTokenList(char **tokens, char *command_line, int cursor,
-                            int current_posision, int *token_counter){
+                            int current_posision, int *token_counter)
+{
 
     // separator ||
     *token_counter += 1;
@@ -122,7 +125,8 @@ int AddEqualToTokenList(char **tokens, char *command_line, int cursor,
 
     // need 2 bytes. '=' '\0'
     tokens[*token_counter-1] = (char *)malloc(sizeof(char)*2);
-    if(tokens[*token_counter-1] == NULL){
+    if(tokens[*token_counter-1] == NULL)
+    {
         fprintf(stderr, "could not allocate sufficient memory for token");
         exit(EXIT_FAILURE);
     }
@@ -136,6 +140,50 @@ int AddEqualToTokenList(char **tokens, char *command_line, int cursor,
 
 }
 
+int AddDoubleOpenParenToTokenList(char **tokens, char *command_line, int cursor,
+                            int current_posision, int *token_counter)
+{
+    // open paren (( 
+    *token_counter += 1;
+
+    // need 3 bytes. "(" "(", "\0"
+    tokens[*token_counter-1] = (char *)malloc(sizeof(char)*3);
+    if(tokens[*token_counter-1] == NULL)
+    {
+        fprintf(stderr, "could not allocate sufficient memory for token");
+        exit(EXIT_FAILURE);
+    }
+
+    sprintf(tokens[*token_counter-1], "((");
+
+    // must increment it not to be included the "(("
+    // in the next token.
+    cursor = current_posision + 2;
+    return cursor;
+}
+
+
+int AddDoubleCloseParenToTokenList(char **tokens, char *command_line, int cursor,
+                            int current_posision, int *token_counter)
+{
+    // open paren (( 
+    *token_counter += 1;
+
+    // need 3 bytes. ")" ")", "\0"
+    tokens[*token_counter-1] = (char *)malloc(sizeof(char)*3);
+    if(tokens[*token_counter-1] == NULL)
+    {
+        fprintf(stderr, "could not allocate sufficient memory for token");
+        exit(EXIT_FAILURE);
+    }
+
+    sprintf(tokens[*token_counter-1], "))");
+
+    // must increment it not to be included the "))"
+    // in the next token.
+    cursor = current_posision + 2;
+    return cursor;
+}
 
 char** TokenizeOneLine(char *command_line)
 {
@@ -161,7 +209,7 @@ char** TokenizeOneLine(char *command_line)
 
     for(int i=0;i<line_len;i++)
     {
-    // have to check command_line[line_len] to record last word.
+        // have to check command_line[line_len] to record last word.
         char cc = command_line[i];
         char next_cc = command_line[i+1];
 
@@ -171,15 +219,14 @@ char** TokenizeOneLine(char *command_line)
                                         cursor, i, &token_counter);
 
         }
-        else if(cc == '&' && next_cc == '&'){
+        else if(cc == '&' && next_cc == '&')
+        {
             // call AddWordToTokenList to add word before '&&' separator.
             cursor = AddWordToTokenList(tokens, command_line,
                                         cursor, i, &token_counter);
 
             cursor = AddDoubleAmpersandToTokenList(tokens, command_line,
                                                     cursor, i, &token_counter);
-
-
         }
         else if(cc == '|' && next_cc == '|')
         {
@@ -206,6 +253,24 @@ char** TokenizeOneLine(char *command_line)
                                         cursor, i, &token_counter);
 
             cursor = AddEqualToTokenList(tokens, command_line,
+                                            cursor, i, &token_counter);
+        }
+        else if(cc == '(' && next_cc == '(')
+        {
+            // call AddWrodToTokenList to add word before "((" separator.
+            cursor = AddWordToTokenList(tokens, command_line,
+                                        cursor, i, &token_counter);
+
+            cursor = AddDoubleOpenParenToTokenList(tokens, command_line,
+                                            cursor, i, &token_counter);
+        }
+        else if(cc == ')' && next_cc == ')')
+        {
+            // call AddWrodToTokenList to add word before "))" separator.
+            cursor = AddWordToTokenList(tokens, command_line,
+                                        cursor, i, &token_counter);
+
+            cursor = AddDoubleCloseParenToTokenList(tokens, command_line,
                                             cursor, i, &token_counter);
         }
     }
