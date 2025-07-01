@@ -1,5 +1,6 @@
 #pragma once
 #include <stdio.h>
+#include <stdbool.h>
 
 #define HOME_DIR "/home/horik/"
 #define HOME_DIR_MAC "/Users/horik"
@@ -29,22 +30,31 @@ enum read_command_mode
     READ_COMMAND_ARGS,
 };
 
+/* base struct */
 typedef struct ast_node_t
 {
-    // base struct
-    enum node_type type;
+    enum node_type type; 
     int number_of_children;
     struct ast_node_t **children;
 }ast_node_t;
 
 typedef struct
 {
-    ast_node_t node;
+    ast_node_t node; // inherit base struct 
     ast_node_t *left;
     ast_node_t *right;
     char *operation;
     bool is_true;
 }binary_operator_node_t;
+
+typedef struct
+{
+    ast_node_t node;
+    int operand1;
+    char* operation;
+    int operand2;
+    bool is_true;
+}condition_node_t;
 
 typedef struct
 {
@@ -59,7 +69,9 @@ typedef struct
 {
     ast_node_t node;
     char *variable_name;
-    int value; // myshell supports only integer as a value of variables.
+
+    // ShellModoki supports only integer as a value of variables.
+    int value;
 }variable_define_node_t;
 
 char* GetUserInputLine();

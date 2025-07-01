@@ -1,6 +1,5 @@
 #include<string.h>
 #include<stdlib.h>
-#include<stdbool.h>
 
 #include "shell_modoki.h"
 #include "symbol_table.h"
