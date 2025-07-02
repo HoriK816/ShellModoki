@@ -67,6 +67,10 @@ int BuildParseTree(char **tokens, ast_node_t *node,
 
         }
     }
+
+    /* concat this subtree to the parent node*/
+    node->children[node->number_of_children] = subtree_node;
+
     return cursor;
 }
 
@@ -232,7 +236,7 @@ int ParseOR(char **tokens, ast_node_t *node,
     int cursor = current_cursor;
 
     /* prepare a OR node */
-    binary_operator_node_t *or_node = CreateVariableDefinitionNode();
+    binary_operator_node_t *or_node = CreateBinaryOperatorNode();
     (or_node->node).type = BINARY_OPERATION;
 
     // left branch
