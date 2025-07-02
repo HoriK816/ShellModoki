@@ -150,6 +150,10 @@ int ParseCommand(char **tokens, ast_node_t *node,
             break;
         if(strcmp(token, "&&")==0)
             break;
+        if(strcmp(token, "fi")==0)
+            break;
+        if(strcmp(token, "done")==0)
+            break;
 
         command_node_t *command_node;
         if(mode == READ_COMMAND_NAME)
