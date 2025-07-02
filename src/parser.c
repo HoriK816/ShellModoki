@@ -5,31 +5,42 @@
 
 #include "parser.h"
 
-ast_node_t* BuildParseTree(char **tokens, int number_of_tokens,
-                           symbol_table_t *symbol_table)
+ast_node_t* CreateSubTreeNode()
 {
-    // prepare the root node
-    ast_node_t *root;
-    root = (ast_node_t*)malloc(sizeof(ast_node_t));
-    if(root == NULL)
+    /* prepare the subtree root node */
+    ast_node_t *subtree_node;
+    subtree_node = (ast_node_t*)malloc(sizeof(ast_node_t));
+    if(subtree_node == NULL)
     {
         fprintf(stderr, "could not sufficient memory for ast_node");
         exit(EXIT_FAILURE);
     }
 
-    root->type = ROOT;
-    root->number_of_children = 0;
+    subtree_node->type = ROOT;
+    subtree_node->number_of_children = 0;
 
     // 100 is a tentative value
-    root->children = (ast_node_t**)malloc(sizeof(ast_node_t*) * 100);
-    if(root->children == NULL)
+    subtree_node->children = (ast_node_t**)malloc(sizeof(ast_node_t*) * 100);
+    if(subtree_node->children == NULL)
     {
         fprintf(stderr, "could not sufficient memory for ast_node");
         exit(EXIT_FAILURE);
     }
 
+    return subtree_node;
+}
+
+
+int BuildParseTree(char **tokens, ast_node_t *node,
+                   int current_cursor, int number_of_tokens,
+                   symbol_table_t *symbol_table)
+{
+    int cursor = current_cursor;
+
+    /* prepare the subtree root node */
+    ast_node_t *subtree_node = CreateSubTreeNode();
+
     enum read_mode mode;
-    int cursor = 0;
     while(cursor < number_of_tokens)
     {
         mode = DecideNextMode(tokens, cursor, number_of_tokens);
@@ -38,12 +49,12 @@ ast_node_t* BuildParseTree(char **tokens, int number_of_tokens,
             
             /* leaf nodes */
             case PARSE_COMMAND:
-                cursor = ParseCommand(tokens, root, cursor, number_of_tokens,
+                cursor = ParseCommand(tokens, subtree_node, cursor, number_of_tokens,
                                      symbol_table);
                 break;
 
             case PARSE_VARIABLE_DIFINITION:
-                cursor = ParseVaribleDifinition(tokens, root, cursor,
+                cursor = ParseVaribleDifinition(tokens, subtree_node, cursor,
                                                 number_of_tokens);
                 break;
 
@@ -56,26 +67,99 @@ ast_node_t* BuildParseTree(char **tokens, int number_of_tokens,
                 break;
 
             case PARSE_AND:
-                cursor = ParseAND(tokens, root, cursor, number_of_tokens,
+                cursor = ParseAND(tokens, subtree_node, cursor, number_of_tokens,
                                   symbol_table); 
                 break;
 
             case PARSE_OR:
-                cursor = ParseOR(tokens, root, cursor, number_of_tokens,
+                cursor = ParseOR(tokens, subtree_node, cursor, number_of_tokens,
                                   symbol_table);
                 break;
 
 
             /* if statement */
             case PARSE_IF:
-                cursor = ParseIF(tokens, root, cursor, number_of_tokens,
+                cursor = ParseIF(tokens, subtree_node, cursor, number_of_tokens,
                                  symbol_table);
                 break;
 
         }
     }
-    return root;
+    return cursor;
 }
+
+
+/*ast_node_t* BuildParseTree(char **tokens, int number_of_tokens,*/
+                           /*symbol_table_t *symbol_table)*/
+/*{*/
+    /*// prepare the root node*/
+    /*ast_node_t *root;*/
+    /*root = (ast_node_t*)malloc(sizeof(ast_node_t));*/
+    /*if(root == NULL)*/
+    /*{*/
+        /*fprintf(stderr, "could not sufficient memory for ast_node");*/
+        /*exit(EXIT_FAILURE);*/
+    /*}*/
+
+    /*root->type = ROOT;*/
+    /*root->number_of_children = 0;*/
+
+    /*// 100 is a tentative value*/
+    /*root->children = (ast_node_t**)malloc(sizeof(ast_node_t*) * 100);*/
+    /*if(root->children == NULL)*/
+    /*{*/
+        /*fprintf(stderr, "could not sufficient memory for ast_node");*/
+        /*exit(EXIT_FAILURE);*/
+    /*}*/
+
+    /*enum read_mode mode;*/
+    /*int cursor = 0;*/
+    /*while(cursor < number_of_tokens)*/
+    /*{*/
+        /*mode = DecideNextMode(tokens, cursor, number_of_tokens);*/
+        /*switch(mode)*/
+        /*{*/
+            
+            /*[> leaf nodes <]*/
+            /*case PARSE_COMMAND:*/
+                /*cursor = ParseCommand(tokens, root, cursor, number_of_tokens,*/
+                                     /*symbol_table);*/
+                /*break;*/
+
+            /*case PARSE_VARIABLE_DIFINITION:*/
+                /*cursor = ParseVaribleDifinition(tokens, root, cursor,*/
+                                                /*number_of_tokens);*/
+                /*break;*/
+
+            /*[> binary operators <]*/
+            /*case PARSE_VARIABLE:*/
+                /*ExtractVariable(tokens, cursor, symbol_table);*/
+                /*break;*/
+
+            /*case PARSE_SEMICOLON:*/
+                /*break;*/
+
+            /*case PARSE_AND:*/
+                /*cursor = ParseAND(tokens, root, cursor, number_of_tokens,*/
+                                  /*symbol_table); */
+                /*break;*/
+
+            /*case PARSE_OR:*/
+                /*cursor = ParseOR(tokens, root, cursor, number_of_tokens,*/
+                                  /*symbol_table);*/
+                /*break;*/
+
+
+            /*[> if statement <]*/
+            /*case PARSE_IF:*/
+                /*cursor = ParseIF(tokens, root, cursor, number_of_tokens,*/
+                                 /*symbol_table);*/
+                /*break;*/
+
+        /*}*/
+    /*}*/
+    /*return root;*/
+/*}*/
 
 
 enum read_mode DecideNextMode(char **tokens, int cursor, int number_of_tokens)
@@ -391,7 +475,7 @@ int ParseIF(char **tokens, ast_node_t *node,
     cursor += 1;
 
     cursor = ParseCondition(tokens, if_node, cursor, number_of_tokens);
-    cursor = BuildParseTree(
+    cursor = BuildParseTree(tokens, if_node, 
     
 
 }

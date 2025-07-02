@@ -5,8 +5,12 @@
 // parser
 int CountTokens(char **tokens);
 
-ast_node_t* BuildParseTree(char **tokens, int number_of_tokens,
-                           symbol_table_t *symbol_table);
+//ast_node_t* BuildParseTree(char **tokens, int number_of_tokens,
+                           //symbol_table_t *symbol_table);
+int BuildParseTree(char **tokens, ast_node_t *node,
+                   int current_cursor, int number_of_tokens,
+                   symbol_table_t *symbol_table);
+
 enum read_mode DecideNextMode(char **tokens, int cursor, int number_of_tokens);
 void FreeTree(ast_node_t *node);
 
