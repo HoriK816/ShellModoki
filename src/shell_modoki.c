@@ -62,10 +62,8 @@ int main(int argc, char** argv)
 
         // 10 is just a tentative value
         root->children = (ast_node_t**)malloc(sizeof(ast_node_t*)*10);
-        /*for(int i=0; i<10; i++){*/
-            /*root->children[i] =  (ast_node_t*)malloc(sizeof(ast_node_t));*/
-        /*}*/
-        
+        root->number_of_children = 0;
+
         int cursor = 0;
         cursor = BuildParseTree(command_tokens, root, cursor,
                                 number_of_tokens, symbol_table);
@@ -83,7 +81,7 @@ int main(int argc, char** argv)
             free(command_tokens[i]);
         free(command_tokens);
 
-        /*FreeTree(root);*/
+        FreeTree(root);
     }
     FreeSymbolTable(symbol_table);
     return 0;
