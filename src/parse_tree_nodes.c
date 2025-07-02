@@ -37,6 +37,8 @@ condition_node_t* CreateConditionNode()
         exit(EXIT_FAILURE);
     }
 
+    condition_node->node.type = CONDITION;
+
     condition_node->operation = (char*)malloc(sizeof(char) * 10); 
     if(condition_node->operation == NULL)
     {
@@ -57,6 +59,11 @@ if_node_t* CreateIFNode()
     }
     
     (if_node->node).type = IF;
+
+    if_node->process = (ast_node_t*)malloc(sizeof(ast_node_t));
+    if_node->process->type = ROOT;
+    if_node->process->number_of_children = 0;
+    if_node->process->children = (ast_node_t**)malloc(sizeof(ast_node_t*)*10);
     
     return if_node;
 }
