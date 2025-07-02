@@ -4,6 +4,7 @@
 #include<stdio.h>
 
 #include "parser.h"
+#include "parse_tree_nodes.h"
 
 
 int BuildParseTree(char **tokens, ast_node_t *node,
@@ -19,16 +20,10 @@ int BuildParseTree(char **tokens, ast_node_t *node,
     while(cursor < number_of_tokens)
     {
         // TODO: This judgement should be separated int a function.
-        if(strcmp(tokens[cursor], "fi") == 0)
+        if((strcmp(tokens[cursor], "fi") == 0)
+                || (strcmp(tokens[cursor], "done") == 0))
         {
-            // dont't consume "fi", because the parent function consumes it.
-            break;
-        }
-
-        // TODO: This judgement should be separated int a function.
-        if(strcmp(tokens[cursor], "done") == 0)
-        {
-            // dont't consume "done", because the parent function consumes it.
+            // dont't consume "fi" or "done", because the parent function consumes it.
             break;
         }
 
@@ -121,7 +116,6 @@ void ExtractVariable(char **tokens, int current_cursor,
     
     if(name == NULL)
         return;
-
     name++;
 
     for(int i=0; i<symbol_table->number_of_records;i++)
@@ -138,8 +132,8 @@ int ParseCommand(char **tokens, ast_node_t *node,
                  symbol_table_t *symbol_table)
 {
     int cursor = current_cursor;
-    enum read_command_mode mode = READ_COMMAND_NAME;
 
+    enum read_command_mode mode = READ_COMMAND_NAME;
     for(int i=cursor; i<number_of_tokens; i++)
     {
         char* token = tokens[cursor];
@@ -165,7 +159,6 @@ int ParseCommand(char **tokens, ast_node_t *node,
                 binary_node->right = (struct ast_node_t*)command_node;
                 
                 cursor++;
-
             }
             else
             {
@@ -175,7 +168,6 @@ int ParseCommand(char **tokens, ast_node_t *node,
 
                 cursor++;
             }
-
         }
         else if(mode == READ_COMMAND_ARGS)
         {
@@ -200,38 +192,17 @@ int ParseAND(char **tokens, ast_node_t *node,
              symbol_table_t *symbol_table)
 {
     int cursor = current_cursor;
-    binary_operator_node_t *and_node;
-    and_node = (binary_operator_node_t*)malloc(sizeof(binary_operator_node_t));
-    if(and_node == NULL)
-    {
-        fprintf(stderr, "could not allocate sufficient memory for ast node");
-        exit(EXIT_FAILURE);
 
-    }
-
-    (and_node->node).type = BINARY_OPERATION;
-
-    and_node->operation = (char*)malloc(sizeof(char) * 5);
-    if(and_node->operation == NULL)
-    {
-        fprintf(stderr, "could not allocate sufficient memory for ast node");
-        exit(EXIT_FAILURE);
-    }
+    /* prepare an AND node */
+    binary_operator_node_t *and_node = CreateBinaryOperatorNode();
     sprintf(and_node->operation, "&&");
     
-    and_node->right = (ast_node_t*)malloc(sizeof(ast_node_t));
-    if(and_node->right == NULL)
-    {
-        fprintf(stderr, "could not allocate sufficient memroy for ast node");
-        exit(EXIT_FAILURE);
-    }
-
     // left branch
     int last = node->number_of_children-1;
     and_node->left = node->children[last]; 
     node->children[last] = (ast_node_t *)and_node;
 
-    // increment this cursor because ParseAND cost a "&&" tokens.
+    /* consume an "&&" token */
     cursor += 1;  
 
     // right branch
@@ -258,39 +229,18 @@ int ParseOR(char **tokens, ast_node_t *node,
              int current_cursor, int number_of_tokens,
              symbol_table_t *symbol_table)
 {
-
     int cursor = current_cursor;
-    binary_operator_node_t *and_node;
-    and_node = (binary_operator_node_t*)malloc(sizeof(binary_operator_node_t));
-    if(and_node == NULL)
-    {
-        fprintf(stderr, "could not allocate sufficient memory for ast node");
-        exit(EXIT_FAILURE);
-    }
 
-    (and_node->node).type = BINARY_OPERATION;
-
-    and_node->operation = (char*)malloc(sizeof(char) * 5);
-    if(and_node->operation == NULL)
-    {
-        fprintf(stderr, "could not allocate sufficient memory for ast node");
-        exit(EXIT_FAILURE);
-    }
-    sprintf(and_node->operation, "||");
-    
-    and_node->right = (ast_node_t*)malloc(sizeof(ast_node_t));
-    if(and_node->right == NULL)
-    {
-        fprintf(stderr, "could not allocate sufficient memroy for ast node");
-        exit(EXIT_FAILURE);
-    }
+    /* prepare a OR node */
+    binary_operator_node_t *or_node = CreateVariableDefinitionNode();
+    (or_node->node).type = BINARY_OPERATION;
 
     // left branch
     int last = node->number_of_children-1;
-    and_node->left = node->children[last]; 
-    node->children[last] = (ast_node_t *)and_node;
+    or_node->left = node->children[last]; 
+    node->children[last] = (ast_node_t *)or_node;
 
-    // consume an && token 
+    // consume an "||" token 
     cursor += 1;  
 
     // right branch
@@ -300,11 +250,11 @@ int ParseOR(char **tokens, ast_node_t *node,
     switch(mode)
     {
         case PARSE_COMMAND:
-            cursor = ParseCommand(tokens, (ast_node_t*)and_node, cursor, 
+            cursor = ParseCommand(tokens, (ast_node_t*)or_node, cursor, 
                                            number_of_tokens, symbol_table);
             break;
         case PARSE_VARIABLE_DIFINITION:
-            cursor = ParseVaribleDifinition(tokens, (ast_node_t*)and_node,
+            cursor = ParseVaribleDifinition(tokens, (ast_node_t*)or_node,
                                             cursor, number_of_tokens);
             break;
         default:
@@ -425,105 +375,3 @@ void FreeTree(ast_node_t *node)
     }
 }
 
-ast_node_t* CreateSubTreeNode()
-{
-    /* prepare the subtree root node */
-    ast_node_t *subtree_node;
-    subtree_node = (ast_node_t*)malloc(sizeof(ast_node_t));
-    if(subtree_node == NULL)
-    {
-        fprintf(stderr, "could not sufficient memory for ast_node");
-        exit(EXIT_FAILURE);
-    }
-
-    subtree_node->type = ROOT;
-    subtree_node->number_of_children = 0;
-
-    // 100 is a tentative value
-    subtree_node->children = (ast_node_t**)malloc(sizeof(ast_node_t*) * 100);
-    if(subtree_node->children == NULL)
-    {
-        fprintf(stderr, "could not sufficient memory for ast_node");
-        exit(EXIT_FAILURE);
-    }
-
-    return subtree_node;
-}
-
-condition_node_t* CreateConditionNode()
-{
-
-    condition_node_t *condition_node 
-        = (condition_node_t*)malloc(sizeof(condition_node_t));
-    if(condition_node == NULL)
-    {
-        fprintf(stderr, "could not allocate sufficient memroy for condition node");
-        exit(EXIT_FAILURE);
-    }
-
-    condition_node->operation = (char*)malloc(sizeof(char) * 10); 
-    if(condition_node->operation == NULL)
-    {
-        fprintf(stderr, "could not allocate sufficient memroy for condition node");
-        exit(EXIT_FAILURE);
-    }
-
-    return condition_node;
-}
-
-if_node_t* CreateIFNode()
-{
-    if_node_t *if_node = (if_node_t*)malloc(sizeof(if_node_t));
-    if(if_node == NULL)
-    {
-        fprintf(stderr, "could not allocate sufficient memroy for if node");
-        exit(EXIT_FAILURE);
-    }
-    
-    (if_node->node).type = IF;
-    
-    return if_node;
-}
-
-command_node_t* CreateCommandNode(char *token)
-{
-    command_node_t *command_node;
-
-    command_node = (command_node_t*)malloc(sizeof(command_node_t));
-    if(command_node == NULL)
-    {
-        fprintf(stderr,
-                "could not allocate sufficient memory for ast node");
-        exit(EXIT_FAILURE);
-    }
-
-    command_node->command = token;
-    command_node->number_of_args = 0;
-
-    // 50 is a tentetive value
-    command_node->args = (char **)malloc(sizeof(char*)*50);
-    if(command_node->args == NULL)
-    {
-        fprintf(stderr,
-                "could not allocate sufficient memory for ast node");
-        exit(EXIT_FAILURE);
-    }
-    (command_node->node).type = COMMAND;
-
-    return command_node;
-}
-
-variable_define_node_t* CreateVariableDefinitionNode()
-{
-    variable_define_node_t *variable_node;
-    variable_node = (variable_define_node_t*)malloc(
-                                    sizeof(variable_define_node_t));
-    if(variable_node == NULL)
-    {
-        fprintf(stderr, "could not allcate sufficient memory for ast node");
-        exit(EXIT_FAILURE);
-    }
-    (variable_node->node).type = VARIABLE_DIFINITION;
-
-    return variable_node;
-}
