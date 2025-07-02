@@ -24,6 +24,7 @@ int BuildParseTree(char **tokens, ast_node_t *node,
                 || (strcmp(tokens[cursor], "done") == 0))
         {
             // dont't consume "fi" or "done", because the parent function consumes it.
+            // printf(" detect the end " );
             break;
         }
 
@@ -64,12 +65,12 @@ int BuildParseTree(char **tokens, ast_node_t *node,
                 cursor = ParseIF(tokens, subtree_node, cursor, number_of_tokens,
                                  symbol_table);
                 break;
-
         }
     }
 
     /* concat this subtree to the parent node*/
     node->children[node->number_of_children] = subtree_node;
+    node->number_of_children++;
 
     return cursor;
 }
@@ -309,11 +310,19 @@ int ParseIF(char **tokens, ast_node_t *node,
 
     cursor = ParseCondition(tokens, (ast_node_t*)if_node, cursor,
                             number_of_tokens);
-    cursor = BuildParseTree(tokens, (ast_node_t*)if_node, cursor,
+    
+    // consume ';' "then" token
+    cursor += 2;
+
+    cursor = BuildParseTree(tokens, if_node->process, cursor,
                             number_of_tokens, symbol_table);
 
     // consume an "fi" token
     cursor += 1;
+    
+    node->children[node->number_of_children] = (ast_node_t*)if_node;
+    node->number_of_children++;
+
 
     return cursor;
 }
