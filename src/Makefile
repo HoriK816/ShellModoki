@@ -10,7 +10,7 @@ SOURCES = shell_modoki.c tokenizer.c parser.c debug_functions.c history.c \
 		  symbol_table.c executor.c printer.c parse_tree_nodes.c
 OBJECTS = $(addprefix $(OBJECTDIR), $(SOURCES:.c=.o))
 
-all: $(TARGETDIR) $(OBJECTDIR) $(TARGET)
+all: $(TARGETDIR) $(OBJECTDIR) $(LOGDIR) $(TARGET)
 
 $(OBJECTDIR)%.o : %.c
 	$(CC) $(CFLAGS) -c $< -o $@
@@ -24,7 +24,7 @@ $(TARGETDIR):
 $(OBJECTDIR):
 	mkdir ../obj
 
-$(OBJECTDIR):
+$(LOGDIR):
 	mkdir ../logs
 
 clean:
