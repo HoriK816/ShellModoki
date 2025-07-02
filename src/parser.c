@@ -5,31 +5,6 @@
 
 #include "parser.h"
 
-ast_node_t* CreateSubTreeNode()
-{
-    /* prepare the subtree root node */
-    ast_node_t *subtree_node;
-    subtree_node = (ast_node_t*)malloc(sizeof(ast_node_t));
-    if(subtree_node == NULL)
-    {
-        fprintf(stderr, "could not sufficient memory for ast_node");
-        exit(EXIT_FAILURE);
-    }
-
-    subtree_node->type = ROOT;
-    subtree_node->number_of_children = 0;
-
-    // 100 is a tentative value
-    subtree_node->children = (ast_node_t**)malloc(sizeof(ast_node_t*) * 100);
-    if(subtree_node->children == NULL)
-    {
-        fprintf(stderr, "could not sufficient memory for ast_node");
-        exit(EXIT_FAILURE);
-    }
-
-    return subtree_node;
-}
-
 
 int BuildParseTree(char **tokens, ast_node_t *node,
                    int current_cursor, int number_of_tokens,
@@ -99,80 +74,6 @@ int BuildParseTree(char **tokens, ast_node_t *node,
     }
     return cursor;
 }
-
-
-/*ast_node_t* BuildParseTree(char **tokens, int number_of_tokens,*/
-                           /*symbol_table_t *symbol_table)*/
-/*{*/
-    /*// prepare the root node*/
-    /*ast_node_t *root;*/
-    /*root = (ast_node_t*)malloc(sizeof(ast_node_t));*/
-    /*if(root == NULL)*/
-    /*{*/
-        /*fprintf(stderr, "could not sufficient memory for ast_node");*/
-        /*exit(EXIT_FAILURE);*/
-    /*}*/
-
-    /*root->type = ROOT;*/
-    /*root->number_of_children = 0;*/
-
-    /*// 100 is a tentative value*/
-    /*root->children = (ast_node_t**)malloc(sizeof(ast_node_t*) * 100);*/
-    /*if(root->children == NULL)*/
-    /*{*/
-        /*fprintf(stderr, "could not sufficient memory for ast_node");*/
-        /*exit(EXIT_FAILURE);*/
-    /*}*/
-
-    /*enum read_mode mode;*/
-    /*int cursor = 0;*/
-    /*while(cursor < number_of_tokens)*/
-    /*{*/
-        /*mode = DecideNextMode(tokens, cursor, number_of_tokens);*/
-        /*switch(mode)*/
-        /*{*/
-            
-            /*[> leaf nodes <]*/
-            /*case PARSE_COMMAND:*/
-                /*cursor = ParseCommand(tokens, root, cursor, number_of_tokens,*/
-                                     /*symbol_table);*/
-                /*break;*/
-
-            /*case PARSE_VARIABLE_DIFINITION:*/
-                /*cursor = ParseVaribleDifinition(tokens, root, cursor,*/
-                                                /*number_of_tokens);*/
-                /*break;*/
-
-            /*[> binary operators <]*/
-            /*case PARSE_VARIABLE:*/
-                /*ExtractVariable(tokens, cursor, symbol_table);*/
-                /*break;*/
-
-            /*case PARSE_SEMICOLON:*/
-                /*break;*/
-
-            /*case PARSE_AND:*/
-                /*cursor = ParseAND(tokens, root, cursor, number_of_tokens,*/
-                                  /*symbol_table); */
-                /*break;*/
-
-            /*case PARSE_OR:*/
-                /*cursor = ParseOR(tokens, root, cursor, number_of_tokens,*/
-                                  /*symbol_table);*/
-                /*break;*/
-
-
-            /*[> if statement <]*/
-            /*case PARSE_IF:*/
-                /*cursor = ParseIF(tokens, root, cursor, number_of_tokens,*/
-                                 /*symbol_table);*/
-                /*break;*/
-
-        /*}*/
-    /*}*/
-    /*return root;*/
-/*}*/
-
 
 enum read_mode DecideNextMode(char **tokens, int cursor, int number_of_tokens)
 {
@@ -471,7 +372,8 @@ int ParseVaribleDifinition(char **tokens, ast_node_t *node,
 }
 
 int ParseIF(char **tokens, ast_node_t *node, 
-            int current_cursor, int number_of_tokens)
+            int current_cursor, int number_of_tokens,
+            symbol_table_t *symbol_table)
 {
     int cursor = current_cursor;
     if_node_t *if_node = (if_node_t*)malloc(sizeof(if_node_t));
@@ -483,13 +385,18 @@ int ParseIF(char **tokens, ast_node_t *node,
     
     (if_node->node).type = IF;
 
-    // consume an if token
+    // consume an "if" token
     cursor += 1;
 
-    cursor = ParseCondition(tokens, if_node, cursor, number_of_tokens);
-    cursor = BuildParseTree(tokens, if_node, 
-    
+    cursor = ParseCondition(tokens, (ast_node_t*)if_node, cursor,
+                            number_of_tokens);
+    cursor = BuildParseTree(tokens, (ast_node_t*)if_node, cursor,
+                            number_of_tokens, symbol_table);
 
+    // consume an "fi" token
+    cursor += 1;
+
+    return cursor;
 }
 
 int ParseCondition(char **tokens, ast_node_t *node, 
@@ -564,3 +471,27 @@ void FreeTree(ast_node_t *node)
     }
 }
 
+ast_node_t* CreateSubTreeNode()
+{
+    /* prepare the subtree root node */
+    ast_node_t *subtree_node;
+    subtree_node = (ast_node_t*)malloc(sizeof(ast_node_t));
+    if(subtree_node == NULL)
+    {
+        fprintf(stderr, "could not sufficient memory for ast_node");
+        exit(EXIT_FAILURE);
+    }
+
+    subtree_node->type = ROOT;
+    subtree_node->number_of_children = 0;
+
+    // 100 is a tentative value
+    subtree_node->children = (ast_node_t**)malloc(sizeof(ast_node_t*) * 100);
+    if(subtree_node->children == NULL)
+    {
+        fprintf(stderr, "could not sufficient memory for ast_node");
+        exit(EXIT_FAILURE);
+    }
+
+    return subtree_node;
+}
