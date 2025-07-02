@@ -53,3 +53,12 @@ dkms.conf
 
 # vim
 *.swp
+
+# bin
+/bin/*
+
+# obj
+/obj/*
+
+# logs
+/logs/*
