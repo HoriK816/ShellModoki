@@ -120,7 +120,6 @@ void DumpParseTree(ast_node_t *node, int level)
         printf("operand2: %d\n", condition_node->operand2);
         return;
     }
-
     else
     {
         // unknown
