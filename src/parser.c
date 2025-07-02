@@ -35,32 +35,42 @@ ast_node_t* BuildParseTree(char **tokens, int number_of_tokens,
         mode = DecideNextMode(tokens, cursor, number_of_tokens);
         switch(mode)
         {
-           case PARSE_COMMAND:
-               cursor = ParseCommand(tokens, root, cursor, number_of_tokens,
+            
+            /* leaf nodes */
+            case PARSE_COMMAND:
+                cursor = ParseCommand(tokens, root, cursor, number_of_tokens,
                                      symbol_table);
-               break;
+                break;
 
-           case PARSE_SEMICOLON:
-               break;
+            case PARSE_VARIABLE_DIFINITION:
+                cursor = ParseVaribleDifinition(tokens, root, cursor,
+                                                number_of_tokens);
+                break;
 
-           case PARSE_AND:
-               cursor = ParseAND(tokens, root, cursor, number_of_tokens,
-                                 symbol_table); 
-               break;
+            /* binary operators */
+            case PARSE_VARIABLE:
+                ExtractVariable(tokens, cursor, symbol_table);
+                break;
 
-           case PARSE_OR:
+            case PARSE_SEMICOLON:
+                break;
+
+            case PARSE_AND:
+                cursor = ParseAND(tokens, root, cursor, number_of_tokens,
+                                  symbol_table); 
+                break;
+
+            case PARSE_OR:
                 cursor = ParseOR(tokens, root, cursor, number_of_tokens,
+                                  symbol_table);
+                break;
+
+
+            /* if statement */
+            case PARSE_IF:
+                cursor = ParseIF(tokens, root, cursor, number_of_tokens,
                                  symbol_table);
-               break;
-
-           case PARSE_VARIABLE_DIFINITION:
-               cursor = ParseVaribleDifinition(tokens, root, cursor,
-                                               number_of_tokens);
-               break;
-
-           case PARSE_VARIABLE:
-               ExtractVariable(tokens, cursor, symbol_table);
-               break;
+                break;
 
         }
     }
@@ -81,6 +91,9 @@ enum read_mode DecideNextMode(char **tokens, int cursor, int number_of_tokens)
 
     else if(strcmp(token, "||") == 0)
         next_mode = PARSE_OR;
+
+    else if(strcmp(token, "if") == 0)
+        next_mode = PARSE_IF;
 
     else if(cursor < number_of_tokens-1)
     {
@@ -301,7 +314,7 @@ int ParseOR(char **tokens, ast_node_t *node,
     and_node->left = node->children[last]; 
     node->children[last] = (ast_node_t *)and_node;
 
-    // increment this cursor because ParseAND cost a "&&" tokens.
+    // consume an && token 
     cursor += 1;  
 
     // right branch
@@ -361,30 +374,63 @@ int ParseVaribleDifinition(char **tokens, ast_node_t *node,
     return cursor;
 }
 
+int ParseIF(char **tokens, ast_node_t *node, 
+            int current_cursor, int number_of_tokens)
+{
+    int cursor = current_cursor;
+    if_node_t *if_node = (if_node_t*)malloc(sizeof(if_node_t));
+    if(if_node == NULL)
+    {
+        fprintf(stderr, "could not allocate sufficient memroy for if node");
+        exit(EXIT_FAILURE);
+    }
+    
+    (if_node->node).type = IF;
+
+    // consume an if token
+    cursor += 1;
+
+    cursor = ParseCondition(tokens, if_node, cursor, number_of_tokens);
+    cursor = BuildParseTree(
+    
+
+}
+
 int ParseCondition(char **tokens, ast_node_t *node, 
              int current_cursor, int number_of_tokens)
 {
     int cursor = current_cursor;
     condition_node_t *condition_node 
         = (condition_node_t*)malloc(sizeof(condition_node_t));
+    if(condition_node == NULL)
+    {
+        fprintf(stderr, "could not allocate sufficient memroy for condition node");
+        exit(EXIT_FAILURE);
+    }
+    // consume '[' 
+    cursor += 1;     
 
-    cursor += 1; // [
-    
-    condition_node->operand1 = atoi(tokens[cursor]);
-    
-    cursor += 1; // operand 1
-
-    // 10 is a tentative value
     condition_node->operation = (char*)malloc(sizeof(char) * 10); 
-    condition_node->operation = tokens[cursor];
+    if(condition_node->operation == NULL)
+    {
+        fprintf(stderr, "could not allocate sufficient memroy for condition node");
+        exit(EXIT_FAILURE);
+    }
 
-    cursor += 1; // operation
-                 
-    condition_node->operand2 = atoi(tokens[cursor]);
-    cursor += 1; // operand 2
-                 
-    cursor += 1; // ]
+    condition_node->operand1  = atoi(tokens[cursor]);
+    condition_node->operation = tokens[cursor+1];
+    condition_node->operand2  = atoi(tokens[cursor+2]);
+    condition_node->is_true   = false;  // just a initiate value
 
+    // concat to the parent node
+    if(node->type == IF)
+    {
+        if_node_t *if_node = (if_node_t*)node;
+        if_node->condition = condition_node;
+    }
+
+    // consume operand1, operation, operand2, ']'  
+    cursor += 4; 
     return cursor;
 }
 
