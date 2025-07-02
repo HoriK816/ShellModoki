@@ -386,5 +386,22 @@ void FreeTree(ast_node_t *node)
         free(free_node->args);
         free(free_node);
     }
+    else if(node->type == IF)
+    {
+        if_node_t *if_node;
+        if_node = (if_node_t*)node;
+
+        FreeTree((ast_node_t*)if_node->condition);
+        FreeTree(if_node->process);
+
+        free(if_node);
+
+    }
+    else if(node->type == CONDITION)
+    {
+        condition_node_t *condition_node;
+        condition_node = (condition_node_t*)node;
+        free(condition_node);
+    }
 }
 
