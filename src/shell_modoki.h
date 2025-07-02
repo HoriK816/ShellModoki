@@ -66,7 +66,7 @@ typedef struct
 {
     ast_node_t node;              // base struct
     condition_node_t *condition;
-    ast_node_t process;
+    ast_node_t *process;
 }
 if_node_t;
 

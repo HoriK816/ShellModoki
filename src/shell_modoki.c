@@ -8,6 +8,7 @@
 #include "history.h"
 #include "printer.h"
 #include "executor.h"
+#include "debug_functions.h"
 
 
 int main(int argc, char** argv)
@@ -54,21 +55,33 @@ int main(int argc, char** argv)
         }
         while(!is_ended);
 
-        // free tokens
-        for(int i=0; i<number_of_tokens; i++)
-            free(command_tokens[i]);
-        free(command_tokens);
 
         /*ast_node_t *root;*/
-        /*root = BuildParseTree(command_tokens, number_of_tokens, symbol_table);*/
+        ast_node_t *root; 
+        root = (ast_node_t*)malloc(sizeof(ast_node_t));
 
-        /*// for debugging*/
-        /*DumpParseTree(root, 0);*/
+        // 10 is just a tentative value
+        root->children = (ast_node_t**)malloc(sizeof(ast_node_t*)*10);
+        /*for(int i=0; i<10; i++){*/
+            /*root->children[i] =  (ast_node_t*)malloc(sizeof(ast_node_t));*/
+        /*}*/
+        
+        int cursor = 0;
+        cursor = BuildParseTree(command_tokens, root, cursor,
+                                number_of_tokens, symbol_table);
+
+        // for debugging
+        DumpParseTree(root->children[0], 0);
 
         /*ExecTree(root, symbol_table);*/
         
         // for debugging
         //DumpSymbolTable(symbol_table);
+
+        // free tokens
+        for(int i=0; i<number_of_tokens; i++)
+            free(command_tokens[i]);
+        free(command_tokens);
 
         /*FreeTree(root);*/
     }
