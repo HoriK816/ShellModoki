@@ -24,8 +24,7 @@ int ParseOR(char **tokens, ast_node_t *node,
 
 int ParseVaribleDifinition(char **tokens, ast_node_t *node,
              int current_cursor, int number_of_tokens);
-// for debugging
-void DumpParseTree(ast_node_t *node, int level);
 
 void ExtractVariable(char **tokens, int current_cursor,
                      symbol_table_t *symbol_table);
+
