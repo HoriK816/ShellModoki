@@ -12,6 +12,8 @@ enum node_type
     COMMAND, 
     BINARY_OPERATION,
     VARIABLE_DIFINITION,
+    IF,
+    CONDITION,
 };
 
 enum read_mode
@@ -22,6 +24,7 @@ enum read_mode
     PARSE_OR,
     PARSE_VARIABLE_DIFINITION,
     PARSE_VARIABLE,
+    PARSE_IF,
 };
 
 enum read_command_mode
@@ -36,7 +39,8 @@ typedef struct ast_node_t
     enum node_type type; 
     int number_of_children;
     struct ast_node_t **children;
-}ast_node_t;
+}
+ast_node_t;
 
 typedef struct
 {
@@ -45,16 +49,26 @@ typedef struct
     ast_node_t *right;
     char *operation;
     bool is_true;
-}binary_operator_node_t;
+}
+binary_operator_node_t;
 
 typedef struct
 {
-    ast_node_t node;
-    int operand1;
+    ast_node_t node;              // base struct
+    int   operand1;
     char* operation;
-    int operand2;
-    bool is_true;
-}condition_node_t;
+    int   operand2;
+    bool  is_true;
+}
+condition_node_t;
+
+typedef struct
+{
+    ast_node_t node;              // base struct
+    condition_node_t *condition;
+    ast_node_t process;
+}
+if_node_t;
 
 typedef struct
 {
@@ -63,16 +77,18 @@ typedef struct
     char *command;
     char **args;
     int number_of_args;
-}command_node_t;
+}
+command_node_t;
 
 typedef struct
 {
     ast_node_t node;
     char *variable_name;
 
-    // ShellModoki supports only integer as a value of variables.
+    // ShellModoki supports only integer as variables.
     int value;
-}variable_define_node_t;
+}
+variable_define_node_t;
 
 char* GetUserInputLine();
 size_t CountCommand(char **commands);
