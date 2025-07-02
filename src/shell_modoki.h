@@ -27,6 +27,17 @@ enum read_mode
     PARSE_IF,
 };
 
+enum comparison_operator
+{
+    EQUAL,
+    NOT_EQUAL,
+    GRATER_THAN,
+    LESSER_THAN,
+    GRATER_EQUAL,
+    LESSER_EQUAL
+};
+
+
 enum read_command_mode
 {
     READ_COMMAND_NAME,
