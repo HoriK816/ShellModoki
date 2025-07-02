@@ -22,7 +22,8 @@ void DumpTokenizeResult(char **tokens, int number_of_tokens)
 void DumpSymbolTable(symbol_table_t *symbol_table)
 {
     printf("--------------symbol table--------------------\n");
-    for(int i=0; i<symbol_table->number_of_records; i++){
+    for(int i=0; i<symbol_table->number_of_records; i++)
+    {
         printf("%s : %d\n", symbol_table->symbol_name[i],
                             *symbol_table->values[i]);
     }
@@ -35,6 +36,9 @@ void DumpParseTree(ast_node_t *node, int level)
     // dump itself
     if(node->type == ROOT)
     {
+        for(int i=0; i<level;i++)
+            printf("\t");
+
         // root
         printf("root\n");
     }
@@ -54,7 +58,6 @@ void DumpParseTree(ast_node_t *node, int level)
             printf("arg : %s\n", command_node->args[j]);
         }
         return;
-
     }
     else if(node->type == BINARY_OPERATION)
     {
@@ -72,7 +75,6 @@ void DumpParseTree(ast_node_t *node, int level)
         // right
         DumpParseTree(binary_node->right, level);
         return;
-
     }
     else if(node->type ==  VARIABLE_DIFINITION)
     {
@@ -87,8 +89,38 @@ void DumpParseTree(ast_node_t *node, int level)
             printf("\t");
         printf("value : %d\n", variable_node->value);
         return;
-
     }
+    else if(node->type == IF)
+    {
+        if_node_t *if_node;
+        if_node = (if_node_t *)node;
+        
+        for(int i=0; i<level;i++)
+            printf("\t");
+        printf("if\n");
+        level++;
+
+        DumpParseTree((ast_node_t*)if_node->condition, level);
+        DumpParseTree(if_node->process, level);
+        return;
+    }
+    else if(node->type == CONDITION)
+    {
+        condition_node_t *condition_node;
+        condition_node = (condition_node_t *)node;
+
+        for(int i=0; i<level;i++)
+            printf("\t");
+        printf("operator: %s\n", condition_node->operation);
+        for(int i=0; i<level;i++)
+            printf("\t");
+        printf("operand1: %d\n", condition_node->operand1);
+        for(int i=0; i<level;i++)
+            printf("\t");
+        printf("operand2: %d\n", condition_node->operand2);
+        return;
+    }
+
     else
     {
         // unknown
@@ -97,7 +129,7 @@ void DumpParseTree(ast_node_t *node, int level)
     }
 
     // dump children 
-    for(int i=0;i<node->number_of_children;i++)
+    for(int i=0; i<node->number_of_children; i++)
     {
         ast_node_t *next_node;
         next_node = (struct ast_node_t *)node->children[i];
