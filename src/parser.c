@@ -131,19 +131,18 @@ void ExtractVariable(char **tokens, int current_cursor,
     }
 }
 
+
+
 int ParseCommand(char **tokens, ast_node_t *node,
                  int current_cursor, int number_of_tokens,
                  symbol_table_t *symbol_table)
 {
+    int cursor = current_cursor;
     enum read_command_mode mode = READ_COMMAND_NAME;
 
-    command_node_t *command_node;
-    int cursor = current_cursor;
     for(int i=cursor; i<number_of_tokens; i++)
     {
-
         char* token = tokens[cursor];
-
         if(token == NULL)
             break;
         if(strcmp(token, ";")==0)
@@ -153,30 +152,10 @@ int ParseCommand(char **tokens, ast_node_t *node,
         if(strcmp(token, "&&")==0)
             break;
 
-
+        command_node_t *command_node;
         if(mode == READ_COMMAND_NAME)
         {
-            // create new command node
-            command_node = (command_node_t*)malloc(sizeof(command_node_t));
-            if(command_node == NULL)
-            {
-                fprintf(stderr,
-                        "could not allocate sufficient memory for ast node");
-                exit(EXIT_FAILURE);
-            }
-
-            command_node->command = token;
-            command_node->number_of_args = 0;
-            // 50 is a tentetive value
-            command_node->args = (char **)malloc(sizeof(char*)*50);
-            if(command_node->args == NULL)
-            {
-                fprintf(stderr,
-                        "could not allocate sufficient memory for ast node");
-                exit(EXIT_FAILURE);
-            }
-
-            (command_node->node).type = COMMAND;
+            command_node = CreateCommandNode(token);
 
             // add this node to AST tree
             if(node->type  == BINARY_OPERATION)
@@ -376,14 +355,8 @@ int ParseIF(char **tokens, ast_node_t *node,
             symbol_table_t *symbol_table)
 {
     int cursor = current_cursor;
-    if_node_t *if_node = (if_node_t*)malloc(sizeof(if_node_t));
-    if(if_node == NULL)
-    {
-        fprintf(stderr, "could not allocate sufficient memroy for if node");
-        exit(EXIT_FAILURE);
-    }
-    
-    (if_node->node).type = IF;
+
+    if_node_t *if_node = CreateIFNode();
 
     // consume an "if" token
     cursor += 1;
@@ -403,22 +376,11 @@ int ParseCondition(char **tokens, ast_node_t *node,
              int current_cursor, int number_of_tokens)
 {
     int cursor = current_cursor;
-    condition_node_t *condition_node 
-        = (condition_node_t*)malloc(sizeof(condition_node_t));
-    if(condition_node == NULL)
-    {
-        fprintf(stderr, "could not allocate sufficient memroy for condition node");
-        exit(EXIT_FAILURE);
-    }
+
+    condition_node_t *condition_node = CreateConditionNode();
+
     // consume '[' 
     cursor += 1;     
-
-    condition_node->operation = (char*)malloc(sizeof(char) * 10); 
-    if(condition_node->operation == NULL)
-    {
-        fprintf(stderr, "could not allocate sufficient memroy for condition node");
-        exit(EXIT_FAILURE);
-    }
 
     condition_node->operand1  = atoi(tokens[cursor]);
     condition_node->operation = tokens[cursor+1];
@@ -494,4 +456,67 @@ ast_node_t* CreateSubTreeNode()
     }
 
     return subtree_node;
+}
+
+condition_node_t* CreateConditionNode()
+{
+
+    condition_node_t *condition_node 
+        = (condition_node_t*)malloc(sizeof(condition_node_t));
+    if(condition_node == NULL)
+    {
+        fprintf(stderr, "could not allocate sufficient memroy for condition node");
+        exit(EXIT_FAILURE);
+    }
+
+    condition_node->operation = (char*)malloc(sizeof(char) * 10); 
+    if(condition_node->operation == NULL)
+    {
+        fprintf(stderr, "could not allocate sufficient memroy for condition node");
+        exit(EXIT_FAILURE);
+    }
+
+    return condition_node;
+}
+
+if_node_t* CreateIFNode()
+{
+    if_node_t *if_node = (if_node_t*)malloc(sizeof(if_node_t));
+    if(if_node == NULL)
+    {
+        fprintf(stderr, "could not allocate sufficient memroy for if node");
+        exit(EXIT_FAILURE);
+    }
+    
+    (if_node->node).type = IF;
+    
+    return if_node;
+}
+
+command_node_t* CreateCommandNode(char *token)
+{
+    command_node_t *command_node;
+
+    command_node = (command_node_t*)malloc(sizeof(command_node_t));
+    if(command_node == NULL)
+    {
+        fprintf(stderr,
+                "could not allocate sufficient memory for ast node");
+        exit(EXIT_FAILURE);
+    }
+
+    command_node->command = token;
+    command_node->number_of_args = 0;
+
+    // 50 is a tentetive value
+    command_node->args = (char **)malloc(sizeof(char*)*50);
+    if(command_node->args == NULL)
+    {
+        fprintf(stderr,
+                "could not allocate sufficient memory for ast node");
+        exit(EXIT_FAILURE);
+    }
+    (command_node->node).type = COMMAND;
+
+    return command_node;
 }

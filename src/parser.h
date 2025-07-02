@@ -38,3 +38,6 @@ int ParseIF(char **tokens, ast_node_t *node,
 
 /* utility */
 ast_node_t* CreateSubTreeNode();
+condition_node_t* CreateConditionNode();
+if_node_t* CreateIFNode();
+command_node_t* CreateCommandNode(char *token);
