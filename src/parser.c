@@ -43,10 +43,23 @@ int BuildParseTree(char **tokens, ast_node_t *node,
     enum read_mode mode;
     while(cursor < number_of_tokens)
     {
+        // TODO: This judgement should be separated int a function.
+        if(strcmp(tokens[cursor], "fi") == 0)
+        {
+            // dont't consume "fi", because the parent function consumes it.
+            break;
+        }
+
+        // TODO: This judgement should be separated int a function.
+        if(strcmp(tokens[cursor], "done") == 0)
+        {
+            // dont't consume "done", because the parent function consumes it.
+            break;
+        }
+
         mode = DecideNextMode(tokens, cursor, number_of_tokens);
         switch(mode)
         {
-            
             /* leaf nodes */
             case PARSE_COMMAND:
                 cursor = ParseCommand(tokens, subtree_node, cursor, number_of_tokens,
@@ -75,7 +88,6 @@ int BuildParseTree(char **tokens, ast_node_t *node,
                 cursor = ParseOR(tokens, subtree_node, cursor, number_of_tokens,
                                   symbol_table);
                 break;
-
 
             /* if statement */
             case PARSE_IF:
