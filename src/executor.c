@@ -13,26 +13,38 @@ void ExecTree(ast_node_t * node, symbol_table_t *symbol_table)
 
     if(node->type == ROOT){
 
-    }else if(node->type == COMMAND){
+    }else if(node->type == IF)
+    {
+        if_node_t* if_node;
+        if_node = (if_node_t*)node;
+
+
+
+    }
+    else if(node->type == COMMAND)
+    {
         command_node_t *command_node;
         command_node = (command_node_t*)node;
         ExecCommand(command_node);
         return;
-
-    }else if(node->type == BINARY_OPERATION){
+    }
+    else if(node->type == BINARY_OPERATION)
+    {
         binary_operator_node_t *binary_node;
         binary_node = (binary_operator_node_t*)node;
 
         ExecBinaryOperator(binary_node);
         return;
-
-    }else if(node->type ==  VARIABLE_DIFINITION){
+    }
+    else if(node->type ==  VARIABLE_DIFINITION)
+    {
         variable_define_node_t *variable_node;
         variable_node = (variable_define_node_t*)node;
 
         StoreVaribale(variable_node, symbol_table);
         return;
     }
+
     
     for(int i=0;i<node->number_of_children;i++){
         ast_node_t *next_node;
@@ -97,6 +109,12 @@ bool ExecBinaryOperator(binary_operator_node_t *binary_node)
     }
 
     return result;
+}
+
+
+bool EvaluateConditionNode(condition_node_t* condition)
+{
+
 }
 
 pid_t ExecCommand(command_node_t *command_node)
