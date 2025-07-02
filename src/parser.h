@@ -41,3 +41,4 @@ ast_node_t* CreateSubTreeNode();
 condition_node_t* CreateConditionNode();
 if_node_t* CreateIFNode();
 command_node_t* CreateCommandNode(char *token);
+variable_define_node_t* CreateVariableDefinitionNode();

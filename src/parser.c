@@ -313,20 +313,12 @@ int ParseOR(char **tokens, ast_node_t *node,
     return cursor;
 }
 
+
 int ParseVaribleDifinition(char **tokens, ast_node_t *node,
              int current_cursor, int number_of_tokens)
 {
     int cursor = current_cursor;
-    variable_define_node_t *variable_node;
-    variable_node = (variable_define_node_t*)malloc(
-                                    sizeof(variable_define_node_t));
-    if(variable_node == NULL)
-    {
-        fprintf(stderr, "could not allcate sufficient memory for ast node");
-        exit(EXIT_FAILURE);
-    }
-
-    (variable_node->node).type = VARIABLE_DIFINITION;
+    variable_define_node_t *variable_node = CreateVariableDefinitionNode();
     
     variable_node->variable_name = tokens[cursor];
     variable_node->value = atoi(tokens[cursor+2]);
@@ -519,4 +511,19 @@ command_node_t* CreateCommandNode(char *token)
     (command_node->node).type = COMMAND;
 
     return command_node;
+}
+
+variable_define_node_t* CreateVariableDefinitionNode()
+{
+    variable_define_node_t *variable_node;
+    variable_node = (variable_define_node_t*)malloc(
+                                    sizeof(variable_define_node_t));
+    if(variable_node == NULL)
+    {
+        fprintf(stderr, "could not allcate sufficient memory for ast node");
+        exit(EXIT_FAILURE);
+    }
+    (variable_node->node).type = VARIABLE_DIFINITION;
+
+    return variable_node;
 }
