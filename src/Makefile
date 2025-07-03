@@ -4,6 +4,7 @@ CFLAGS = -Wall -g
 # path
 TARGETDIR = ../bin/
 OBJECTDIR = ../obj/
+LOGDIR    = ../logs/
 
 TARGET = $(addprefix $(TARGETDIR), myshell)
 SOURCES = shell_modoki.c tokenizer.c parser.c debug_functions.c history.c \
