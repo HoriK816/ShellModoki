@@ -14,6 +14,7 @@ enum node_type
     BINARY_OPERATION,
     VARIABLE_DIFINITION,
     IF,
+    WHILE,
     CONDITION,
 };
 
@@ -90,6 +91,7 @@ enum read_mode
     PARSE_VARIABLE_DIFINITION,
     PARSE_VARIABLE,
     PARSE_IF,
+    PARSE_WHILE,
 };
 
 enum read_command_mode

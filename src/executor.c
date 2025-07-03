@@ -27,6 +27,18 @@ void ExecTree(ast_node_t * node, symbol_table_t *symbol_table)
 
         return;
     }
+    else if(node->type == WHILE)
+    {
+        while_node_t* while_node;
+        while_node = (while_node_t*)node;
+
+        bool is_true = EvaluateConditionNode(while_node->condition);
+        while(is_true)
+        {
+            ExecTree(while_node->process, symbol_table);
+        }
+        return;
+    }
     else if(node->type == COMMAND)
     {
         command_node_t *command_node;

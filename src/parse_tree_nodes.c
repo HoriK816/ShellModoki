@@ -68,6 +68,25 @@ if_node_t* CreateIFNode()
     return if_node;
 }
 
+while_node_t* CreateWHILENode()
+{
+    while_node_t *while_node = (while_node_t*)malloc(sizeof(while_node_t));
+    if(while_node == NULL)
+    {
+        fprintf(stderr, "could not allocate sufficient memory for while node");
+        exit(EXIT_FAILURE);
+    }
+
+    (while_node->node).type = WHILE;
+
+    while_node->process = (ast_node_t*)malloc(sizeof(ast_node_t));
+    while_node->process->type = ROOT;
+    while_node->process->number_of_children = 0;
+    while_node->process->children = (ast_node_t**)malloc(sizeof(ast_node_t*)*10);
+
+    return while_node;
+}
+
 command_node_t* CreateCommandNode(char *token)
 {
     command_node_t *command_node;

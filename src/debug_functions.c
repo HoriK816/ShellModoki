@@ -104,6 +104,20 @@ void DumpParseTree(ast_node_t *node, int level)
         DumpParseTree(if_node->process, level);
         return;
     }
+    else if(node->type == WHILE)
+    {
+        while_node_t *while_node;
+        while_node = (while_node_t *)node;
+
+        for(int i=0; i<level;i++)
+            printf("\t");
+        printf("while\n");
+        level++;
+
+        DumpParseTree((ast_node_t*)while_node->condition, level);
+        DumpParseTree(while_node->process, level);
+        return;
+    }
     else if(node->type == CONDITION)
     {
         condition_node_t *condition_node;

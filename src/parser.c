@@ -33,8 +33,8 @@ int BuildParseTree(char **tokens, ast_node_t *node,
         {
             /* leaf nodes */
             case PARSE_COMMAND:
-                cursor = ParseCommand(tokens, subtree_node, cursor, number_of_tokens,
-                                     symbol_table);
+                cursor = ParseCommand(tokens, subtree_node, cursor,
+                                      number_of_tokens, symbol_table);
                 break;
 
             case PARSE_VARIABLE_DIFINITION:
@@ -51,19 +51,25 @@ int BuildParseTree(char **tokens, ast_node_t *node,
                 break;
 
             case PARSE_AND:
-                cursor = ParseAND(tokens, subtree_node, cursor, number_of_tokens,
-                                  symbol_table); 
+                cursor = ParseAND(tokens, subtree_node, cursor,
+                                  number_of_tokens, symbol_table); 
                 break;
 
             case PARSE_OR:
-                cursor = ParseOR(tokens, subtree_node, cursor, number_of_tokens,
-                                  symbol_table);
+                cursor = ParseOR(tokens, subtree_node, cursor,
+                                 number_of_tokens, symbol_table);
                 break;
 
             /* if statement */
             case PARSE_IF:
-                cursor = ParseIF(tokens, subtree_node, cursor, number_of_tokens,
-                                 symbol_table);
+                cursor = ParseIF(tokens, subtree_node, cursor,
+                                 number_of_tokens, symbol_table);
+                break;
+
+            /* while statement */
+            case PARSE_WHILE:
+                cursor = ParseWHILE(tokens, subtree_node, cursor, 
+                                    number_of_tokens,symbol_table);
                 break;
         }
     }
@@ -91,6 +97,9 @@ enum read_mode DecideNextMode(char **tokens, int cursor, int number_of_tokens)
 
     else if(strcmp(token, "if") == 0)
         next_mode = PARSE_IF;
+    
+    else if(strcmp(token, "while") == 0)
+        next_mode = PARSE_WHILE;
 
     else if(cursor < number_of_tokens-1)
     {
@@ -129,8 +138,6 @@ void ExtractVariable(char **tokens, int current_cursor,
             sprintf(tokens[current_cursor], "%d", *symbol_table->values[i]);
     }
 }
-
-
 
 int ParseCommand(char **tokens, ast_node_t *node,
                  int current_cursor, int number_of_tokens,
@@ -272,7 +279,6 @@ int ParseOR(char **tokens, ast_node_t *node,
     return cursor;
 }
 
-
 int ParseVaribleDifinition(char **tokens, ast_node_t *node,
              int current_cursor, int number_of_tokens)
 {
@@ -315,7 +321,7 @@ int ParseIF(char **tokens, ast_node_t *node,
     cursor = ParseCondition(tokens, (ast_node_t*)if_node, cursor,
                             number_of_tokens);
     
-    // consume ';' "then" token
+    // consume ';' "then" tokens
     cursor += 2;
 
     cursor = BuildParseTree(tokens, if_node->process, cursor,
@@ -327,6 +333,34 @@ int ParseIF(char **tokens, ast_node_t *node,
     node->children[node->number_of_children] = (ast_node_t*)if_node;
     node->number_of_children++;
 
+    return cursor;
+}
+
+int ParseWHILE(char **tokens, ast_node_t *node, 
+            int current_cursor, int number_of_tokens,
+            symbol_table_t *symbol_table)
+{
+    int cursor = current_cursor;
+
+    while_node_t *while_node = CreateWHILENode();
+
+    // consume an "while" token
+    cursor += 1;
+
+    cursor = ParseCondition(tokens, (ast_node_t*)while_node, cursor,
+                            number_of_tokens);
+
+    // consume an "do" token
+    cursor += 1;
+
+    cursor = BuildParseTree(tokens, while_node->process, cursor,
+                            number_of_tokens, symbol_table);
+
+    // consume an "done" token
+    cursor += 1;
+
+    node->children[node->number_of_children] = (ast_node_t*)while_node;
+    node->number_of_children++;
 
     return cursor;
 }
@@ -351,6 +385,11 @@ int ParseCondition(char **tokens, ast_node_t *node,
     {
         if_node_t *if_node = (if_node_t*)node;
         if_node->condition = condition_node;
+    }
+    else if(node->type == WHILE)
+    {
+        while_node_t* while_node = (while_node_t*)node;
+        while_node->condition = condition_node;
     }
 
     // consume operand1, operation, operand2, ']'  
@@ -400,6 +439,16 @@ void FreeTree(ast_node_t *node)
 
         free(if_node);
 
+    }
+    else if(node->type == WHILE)
+    {
+        while_node_t *while_node;
+        while_node = (while_node_t*)node;
+
+        FreeTree((ast_node_t*)while_node->condition);
+        FreeTree(while_node->process);
+
+        free(while_node);
     }
     else if(node->type == CONDITION)
     {
