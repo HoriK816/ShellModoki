@@ -31,9 +31,9 @@ enum comparison_operator
 {
     EQUAL,
     NOT_EQUAL,
-    GRATER_THAN,
+    GREATER_THAN,
     LESSER_THAN,
-    GRATER_EQUAL,
+    GREATER_EQUAL,
     LESSER_EQUAL
 };
 

@@ -2,7 +2,6 @@
 #include<stdlib.h>
 #include<string.h>
 #include<unistd.h>
-#include<sys/types.h>
 #include<sys/wait.h>
 
 #include "executor.h"
@@ -13,13 +12,17 @@ void ExecTree(ast_node_t * node, symbol_table_t *symbol_table)
 
     if(node->type == ROOT){
 
-    }else if(node->type == IF)
+    }
+    else if(node->type == IF)
     {
         if_node_t* if_node;
         if_node = (if_node_t*)node;
 
+        bool is_true = EvaluateConditionNode(if_node->condition);
+        if(is_true)
+            ExecTree(if_node->process, symbol_table);
 
-
+        return;
     }
     else if(node->type == COMMAND)
     {
@@ -114,7 +117,63 @@ bool ExecBinaryOperator(binary_operator_node_t *binary_node)
 
 bool EvaluateConditionNode(condition_node_t* condition)
 {
+    /* set the corresponded operator */
+    enum comparison_operator operator;
+    
+    if(strcmp(condition->operation, "-eq") == 0)
+        operator = EQUAL;
 
+    if(strcmp(condition->operation, "-ne") == 0)
+        operator = NOT_EQUAL;
+
+    if(strcmp(condition->operation, "-gt") == 0)
+        operator = GREATER_THAN;
+
+    if(strcmp(condition->operation, "-lt") == 0)
+        operator = LESSER_THAN;
+
+    if(strcmp(condition->operation, "-ge") == 0)
+        operator = GREATER_EQUAL;
+
+    if(strcmp(condition->operation, "-le") == 0)
+        operator = LESSER_EQUAL;
+
+
+    /* evaluate given operands */
+    int operand1 = condition->operand1;
+    int operand2 = condition->operand2;
+    bool is_true;
+    switch(operator)
+    {
+        case EQUAL:
+            if(operand1 == operand2)
+                is_true = true;
+            break;
+        case NOT_EQUAL:
+            if(operand1 != operand2)
+                is_true = true;
+            break;
+        case GREATER_THAN:
+            if(operand2 < operand1)
+                is_true = true;
+            break;
+        case LESSER_THAN:
+            if(operand1 <= operand2)
+                is_true = true;
+            break;
+        case GREATER_EQUAL:
+            if(operand2 <= operand1)
+                is_true = true;
+            break;
+        case LESSER_EQUAL:
+            if(operand1 <= operand2)
+                is_true = true;
+            break;
+        default:
+            is_true = false; 
+    }
+
+    return is_true;
 }
 
 pid_t ExecCommand(command_node_t *command_node)
