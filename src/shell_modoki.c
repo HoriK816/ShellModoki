@@ -42,15 +42,15 @@ int main(int argc, char** argv)
             }
 
             // for debugging
-            DumpTokenizeResult(command_tokens, number_of_tokens);
+            /*DumpTokenizeResult(command_tokens, number_of_tokens);*/
 
             is_ended = IsPromptEnded(command_tokens, number_of_tokens);
             
             // for debugging
-            if(is_ended)
-                printf("user's input is ended\n");
-            else
-                printf("user's input is not ended. continue ... \n");
+            /*if(is_ended)*/
+                /*printf("user's input is ended\n");*/
+            /*else*/
+                /*printf("user's input is not ended. continue ... \n");*/
 
         }
         while(!is_ended);
@@ -69,9 +69,9 @@ int main(int argc, char** argv)
                                 number_of_tokens, symbol_table);
 
         // for debugging
-        DumpParseTree(root->children[0], 0);
+        /*DumpParseTree(root->children[0], 0);*/
 
-        /*ExecTree(root, symbol_table);*/
+        ExecTree(root, symbol_table);
         
         // for debugging
         //DumpSymbolTable(symbol_table);

@@ -10,7 +10,8 @@
 void ExecTree(ast_node_t * node, symbol_table_t *symbol_table)
 {
 
-    if(node->type == ROOT){
+    if(node->type == ROOT)
+    {
 
     }
     else if(node->type == IF)
@@ -20,7 +21,9 @@ void ExecTree(ast_node_t * node, symbol_table_t *symbol_table)
 
         bool is_true = EvaluateConditionNode(if_node->condition);
         if(is_true)
+        {
             ExecTree(if_node->process, symbol_table);
+        }
 
         return;
     }
@@ -72,7 +75,7 @@ bool ExecBinaryOperator(binary_operator_node_t *binary_node)
             if(strcmp(binary_node->operation, "||") == 0)
                 return true;
         }else{
-            if(strcmp(binary_node->operation, "&&") == 0)
+           if(strcmp(binary_node->operation, "&&") == 0)
                 return false;
         }
     }
@@ -142,35 +145,38 @@ bool EvaluateConditionNode(condition_node_t* condition)
     /* evaluate given operands */
     int operand1 = condition->operand1;
     int operand2 = condition->operand2;
-    bool is_true;
+    bool is_true = false;
     switch(operator)
     {
         case EQUAL:
             if(operand1 == operand2)
                 is_true = true;
             break;
+
         case NOT_EQUAL:
             if(operand1 != operand2)
                 is_true = true;
             break;
+
         case GREATER_THAN:
             if(operand2 < operand1)
                 is_true = true;
             break;
+
         case LESSER_THAN:
             if(operand1 <= operand2)
                 is_true = true;
             break;
+
         case GREATER_EQUAL:
             if(operand2 <= operand1)
                 is_true = true;
             break;
+
         case LESSER_EQUAL:
             if(operand1 <= operand2)
                 is_true = true;
             break;
-        default:
-            is_true = false; 
     }
 
     return is_true;
