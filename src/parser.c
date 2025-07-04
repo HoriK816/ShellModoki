@@ -162,7 +162,7 @@ int ParseCommand(char **tokens, ast_node_t *node,
         if(strcmp(token, "done")==0)
             break;
 
-        command_node_t *command_node;
+        command_node_t *command_node = NULL;
         if(mode == READ_COMMAND_NAME)
         {
             command_node = CreateCommandNode(token);
