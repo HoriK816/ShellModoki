@@ -146,6 +146,7 @@ int ParseCommand(char **tokens, ast_node_t *node,
     int cursor = current_cursor;
 
     enum read_command_mode mode = READ_COMMAND_NAME;
+    command_node_t *command_node = NULL;
     for(int i=cursor; i<number_of_tokens; i++)
     {
         char* token = tokens[cursor];
@@ -162,7 +163,7 @@ int ParseCommand(char **tokens, ast_node_t *node,
         if(strcmp(token, "done")==0)
             break;
 
-        command_node_t *command_node = NULL;
+
         if(mode == READ_COMMAND_NAME)
         {
             command_node = CreateCommandNode(token);
