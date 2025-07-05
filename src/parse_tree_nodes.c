@@ -8,7 +8,8 @@ ast_node_t* CreateSubTreeNode()
     subtree_node = (ast_node_t*)malloc(sizeof(ast_node_t));
     if(subtree_node == NULL)
     {
-        fprintf(stderr, "could not sufficient memory for ast_node");
+        fprintf(stderr,
+                "could not sufficient memory for ast_node");
         exit(EXIT_FAILURE);
     }
 
@@ -19,7 +20,8 @@ ast_node_t* CreateSubTreeNode()
     subtree_node->children = (ast_node_t**)malloc(sizeof(ast_node_t*) * 100);
     if(subtree_node->children == NULL)
     {
-        fprintf(stderr, "could not sufficient memory for ast_node");
+        fprintf(stderr,
+                "could not sufficient memory for ast_node");
         exit(EXIT_FAILURE);
     }
 
@@ -33,7 +35,8 @@ condition_node_t* CreateConditionNode()
         = (condition_node_t*)malloc(sizeof(condition_node_t));
     if(condition_node == NULL)
     {
-        fprintf(stderr, "could not allocate sufficient memroy for condition node");
+        fprintf(stderr,
+                "could not allocate sufficient memroy for condition node");
         exit(EXIT_FAILURE);
     }
 
@@ -43,7 +46,8 @@ condition_node_t* CreateConditionNode()
     condition_node->operation = (char*)malloc(sizeof(char) * 10); 
     if(condition_node->operation == NULL)
     {
-        fprintf(stderr, "could not allocate sufficient memroy for condition node");
+        fprintf(stderr,
+                "could not allocate sufficient memroy for condition node");
         exit(EXIT_FAILURE);
     }
 
@@ -75,7 +79,8 @@ while_node_t* CreateWHILENode()
     while_node_t *while_node = (while_node_t*)malloc(sizeof(while_node_t));
     if(while_node == NULL)
     {
-        fprintf(stderr, "could not allocate sufficient memory for while node");
+        fprintf(stderr,
+                "could not allocate sufficient memory for while node");
         exit(EXIT_FAILURE);
     }
 
@@ -125,7 +130,8 @@ variable_define_node_t* CreateVariableDefinitionNode()
                                     sizeof(variable_define_node_t));
     if(variable_node == NULL)
     {
-        fprintf(stderr, "could not allcate sufficient memory for ast node");
+        fprintf(stderr,
+                "could not allcate sufficient memory for ast node");
         exit(EXIT_FAILURE);
     }
     (variable_node->node).type = VARIABLE_DIFINITION;
@@ -140,7 +146,8 @@ binary_operator_node_t *CreateBinaryOperatorNode()
     binary_node = (binary_operator_node_t*)malloc(sizeof(binary_operator_node_t));
     if(binary_node == NULL)
     {
-        fprintf(stderr, "could not allocate sufficient memory for ast node");
+        fprintf(stderr,
+                "could not allocate sufficient memory for ast node");
         exit(EXIT_FAILURE);
     }
 
@@ -149,14 +156,16 @@ binary_operator_node_t *CreateBinaryOperatorNode()
     binary_node->operation = (char*)malloc(sizeof(char) * 5);
     if(binary_node->operation == NULL)
     {
-        fprintf(stderr, "could not allocate sufficient memory for ast node");
+        fprintf(stderr,
+                "could not allocate sufficient memory for ast node");
         exit(EXIT_FAILURE);
     }
     
     binary_node->right = (ast_node_t*)malloc(sizeof(ast_node_t));
     if(binary_node->right == NULL)
     {
-        fprintf(stderr, "could not allocate sufficient memroy for ast node");
+        fprintf(stderr,
+                "could not allocate sufficient memroy for ast node");
         exit(EXIT_FAILURE);
     }
 
