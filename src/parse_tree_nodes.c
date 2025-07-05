@@ -51,6 +51,16 @@ condition_node_t* CreateConditionNode()
         exit(EXIT_FAILURE);
     }
 
+    // 100 is a tentative value
+    condition_node->operand1 = (char**)malloc(sizeof(char*)*100);
+    condition_node->operand2 = (char**)malloc(sizeof(char*)*100);
+    for(int i=0; i<100; i++)
+    {
+        condition_node->operand1[i] = (char*)malloc(sizeof(char)*10);
+        condition_node->operand2[i] = (char*)malloc(sizeof(char)*10);
+    }
+    condition_node->number_of_operand1_tokens = 0;
+    condition_node->number_of_operand2_tokens = 0;
     return condition_node;
 }
 

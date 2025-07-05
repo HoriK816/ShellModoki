@@ -366,22 +366,71 @@ int ParseWHILE(char **tokens, ast_node_t *node,
     return cursor;
 }
 
-int ParseCondition(char **tokens, ast_node_t *node, 
-             int current_cursor, int number_of_tokens)
+int ParseConditionOperand(char **tokens, char** operand,
+                          int current_cursor, int *number_of_operand_tokens)
 {
     int cursor = current_cursor;
 
+    /* variable or arithmetic expression */
+    if(strcmp(tokens[cursor], "$") == 0)
+    {
+        cursor += 1; // consume '$'
+                      
+        /* arithmetic calculation */
+        if(strcmp(tokens[cursor], "((") == 0)
+        {
+            cursor += 1; // consume "(("
+            int i = 0;
+            while(strcmp(tokens[cursor], "))") == 0)
+            {
+                operand[i] = tokens[cursor+i];
+                *number_of_operand_tokens += 1;
+            }
+        }
+        else
+        {
+            // TODO: write process for variables
+        }
+    }
+
+    /* just a number */
+    else
+    {
+        operand[*number_of_operand_tokens] = tokens[cursor];
+        *number_of_operand_tokens += 1;
+
+        cursor += 1; // consume number
+    }
+
+    return cursor;
+}
+
+int ParseCondition(char **tokens, ast_node_t *node, 
+                   int current_cursor, int number_of_tokens)
+{
+    int cursor = current_cursor;
+
+    /* parse an condition */
+
     condition_node_t *condition_node = CreateConditionNode();
+    cursor += 1;                 // consume '['  
 
-    // consume '[' 
-    cursor += 1;     
+    /* operand 1 */
+    cursor = ParseConditionOperand(tokens, condition_node->operand1, cursor,
+                                   &condition_node->number_of_operand1_tokens);
 
-    condition_node->operand1  = atoi(tokens[cursor]);
-    condition_node->operation = tokens[cursor+1];
-    condition_node->operand2  = atoi(tokens[cursor+2]);
-    condition_node->is_true   = false;  // just a initiate value
+    /* comparison operation */
+    condition_node->operation = tokens[cursor];
+    cursor += 1;                 // consume comparison operation
 
-    // concat to the parent node
+    /* operand 2 */
+    cursor = ParseConditionOperand(tokens, condition_node->operand2, cursor,
+                                   &condition_node->number_of_operand2_tokens);
+
+    condition_node->is_true  = false;  
+    cursor += 1;                 // consume ']'
+
+    /* concatenate it to the parent node */
     if(node->type == IF)
     {
         if_node_t *if_node = (if_node_t*)node;
@@ -393,8 +442,6 @@ int ParseCondition(char **tokens, ast_node_t *node,
         while_node->condition = condition_node;
     }
 
-    // consume operand1, operation, operand2, ']'  
-    cursor += 4; 
     return cursor;
 }
 

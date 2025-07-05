@@ -39,9 +39,11 @@ binary_operator_node_t;
 typedef struct
 {
     ast_node_t          node;              // base struct
-    int                 operand1;
+    char**              operand1;
     char*               operation;
-    int                 operand2;
+    char**              operand2;
+    int                 number_of_operand1_tokens;
+    int                 number_of_operand2_tokens;
     bool                is_true;
 }
 condition_node_t;
