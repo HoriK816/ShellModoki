@@ -31,4 +31,5 @@ arithmetic_node_t* InsertOperator(char **tokens, int *current_cursor,
 arithmetic_node_t* BuildArithmeticTree(char **tokens, int arithmetic_cursor, 
                         arithmetic_node_t* root, int number_of_tokens);
 
+int EvaluateArithmeticTree(arithmetic_node_t* node);
 void DumpArithmeticTree(arithmetic_node_t* node, int level);

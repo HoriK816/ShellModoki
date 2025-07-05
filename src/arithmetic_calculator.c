@@ -44,9 +44,63 @@ int main(void)
     root = BuildArithmeticTree(tokens, cursor, root, number_of_tokens);
 
     DumpArithmeticTree(root, 0);
+
+    printf("reuslt : %d\n", EvaluateArithmeticTree(root));
+
     return 0;
 }
 
+int EvaluateArithmeticTree(arithmetic_node_t* node)
+{
+    int result = 0;
+    int left_value;
+    int right_value;
+
+    if(node->left_tree->priority == 3 && node->right_tree->priority == 3)
+    {
+        left_value  = node->left_tree->value; 
+        right_value = node->right_tree->value;
+    }
+    else if(node->left_tree->priority == 3)
+    {
+        left_value  = node->left_tree->value; 
+        right_value = EvaluateArithmeticTree(node->right_tree);
+    }
+    else if(node->right_tree->priority == 3)
+    {
+        left_value  = EvaluateArithmeticTree(node->left_tree);
+        right_value = node->right_tree->value;
+    }
+    else
+    {
+        left_value  = EvaluateArithmeticTree(node->left_tree);
+        right_value = EvaluateArithmeticTree(node->right_tree);
+    }
+
+    if(strtok(node->operation, "+") == 0)
+    {
+        result = left_value + right_value;
+    }
+    else if(strtok(node->operation, "-") == 0)
+    {
+        result = left_value - right_value;
+    }
+    else if(strtok(node->operation, "*") == 0)
+    {
+        result = left_value * right_value;
+    }
+    else if(strtok(node->operation, "/") == 0)
+    {
+        result = left_value / right_value;
+    }
+    else if(strtok(node->operation, "%") == 0)
+    {
+        result = left_value % right_value;
+    }
+
+    return result;
+
+}
 
 arithmetic_node_t* BuildArithmeticTree(char **tokens, int arithmetic_cursor, 
                         arithmetic_node_t* root, int number_of_tokens)
