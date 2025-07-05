@@ -38,6 +38,7 @@ condition_node_t* CreateConditionNode()
     }
 
     condition_node->node.type = CONDITION;
+    condition_node->node.number_of_children = 0;
 
     condition_node->operation = (char*)malloc(sizeof(char) * 10); 
     if(condition_node->operation == NULL)
@@ -59,6 +60,7 @@ if_node_t* CreateIFNode()
     }
     
     (if_node->node).type = IF;
+    (if_node->node).number_of_children = 0;
 
     if_node->process = (ast_node_t*)malloc(sizeof(ast_node_t));
     if_node->process->type = ROOT;
@@ -78,6 +80,7 @@ while_node_t* CreateWHILENode()
     }
 
     (while_node->node).type = WHILE;
+    (while_node->node).number_of_children = 0;
 
     while_node->process = (ast_node_t*)malloc(sizeof(ast_node_t));
     while_node->process->type = ROOT;
