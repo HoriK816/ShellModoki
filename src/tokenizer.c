@@ -54,7 +54,7 @@ char** TokenizeOneLine(char *command_line)
                                         cursor, i, &token_counter);
 
             cursor = AddDoublePipeToTokenList(tokens, command_line,
-                                                    cursor, i, &token_counter);
+                                              cursor, i, &token_counter);
         }
         else if(cc == ';')
         {
@@ -63,7 +63,7 @@ char** TokenizeOneLine(char *command_line)
                                         cursor, i, &token_counter);
 
             cursor = AddSemicolonToTokenList(tokens, command_line,
-                                            cursor, i, &token_counter);
+                                             cursor, i, &token_counter);
         }
         else if(cc == '=')
         {
@@ -72,7 +72,7 @@ char** TokenizeOneLine(char *command_line)
                                         cursor, i, &token_counter);
 
             cursor = AddEqualToTokenList(tokens, command_line,
-                                            cursor, i, &token_counter);
+                                         cursor, i, &token_counter);
         }
         else if(cc == '(' && next_cc == '(')
         {
@@ -81,7 +81,7 @@ char** TokenizeOneLine(char *command_line)
                                         cursor, i, &token_counter);
 
             cursor = AddDoubleOpenParenToTokenList(tokens, command_line,
-                                            cursor, i, &token_counter);
+                                                   cursor, i, &token_counter);
         }
         else if(cc == ')' && next_cc == ')')
         {
@@ -90,7 +90,52 @@ char** TokenizeOneLine(char *command_line)
                                         cursor, i, &token_counter);
 
             cursor = AddDoubleCloseParenToTokenList(tokens, command_line,
+                                                    cursor, i, &token_counter);
+        }
+        else if(cc == '+') 
+        {
+            // call AddWrodToTokenList to add word before "+" separator.
+            cursor = AddWordToTokenList(tokens, command_line,
+                                        cursor, i, &token_counter);
+
+            cursor = AddPlusToTokenList(tokens, command_line,
+                                        cursor, i, &token_counter);
+        }
+        else if(cc == '-')
+        {
+            // call AddWrodToTokenList to add word before "-" separator.
+            cursor = AddWordToTokenList(tokens, command_line,
+                                        cursor, i, &token_counter);
+
+            cursor = AddHyphenToTokenList(tokens, command_line,
+                                          cursor, i, &token_counter);
+        }
+        else if(cc == '*')
+        {
+            // call AddWrodToTokenList to add word before "*" separator.
+            cursor = AddWordToTokenList(tokens, command_line,
+                                        cursor, i, &token_counter);
+
+            cursor = AddAsteriskToTokenList(tokens, command_line,
                                             cursor, i, &token_counter);
+        }
+        else if(cc == '/')
+        {
+            // call AddWrodToTokenList to add word before "+" separator.
+            cursor = AddWordToTokenList(tokens, command_line,
+                                        cursor, i, &token_counter);
+
+            cursor = AddSlashToTokenList(tokens, command_line,
+                                         cursor, i, &token_counter);
+        }
+        else if(cc == '%')
+        {
+            // call AddWrodToTokenList to add word before "+" separator.
+            cursor = AddWordToTokenList(tokens, command_line,
+                                        cursor, i, &token_counter);
+
+            cursor = AddPercentToTokenList(tokens, command_line,
+                                           cursor, i, &token_counter);
         }
     }
     return tokens;
@@ -216,7 +261,7 @@ int AddDoubleOpenParenToTokenList(char **tokens, char *command_line, int cursor,
     // open paren (( 
     *token_counter += 1;
 
-    // need 3 bytes. "(" "(", "\0"
+    // need 3 bytes. '(' '(', '\0'
     tokens[*token_counter-1] = (char *)malloc(sizeof(char)*3);
     if(tokens[*token_counter-1] == NULL)
     {
@@ -238,7 +283,7 @@ int AddDoubleCloseParenToTokenList(char **tokens, char *command_line, int cursor
     // open paren (( 
     *token_counter += 1;
 
-    // need 3 bytes. ")" ")", "\0"
+    // need 3 bytes. ')' ')', '\0'
     tokens[*token_counter-1] = (char *)malloc(sizeof(char)*3);
     if(tokens[*token_counter-1] == NULL)
     {
@@ -251,6 +296,118 @@ int AddDoubleCloseParenToTokenList(char **tokens, char *command_line, int cursor
     // must increment it not to be included the "))"
     // in the next token.
     cursor = current_posision + 2;
+    return cursor;
+}
+
+int AddPlusToTokenList(char **tokens, char *command_line, int cursor,
+                       int current_posision, int *token_counter)
+{
+    // open paren + 
+    *token_counter += 1;
+
+    // need 2 bytes. '+', '\0'
+    tokens[*token_counter-1] = (char *)malloc(sizeof(char)*2);
+    if(tokens[*token_counter-1] == NULL)
+    {
+        fprintf(stderr, "could not allocate sufficient memory for token");
+        exit(EXIT_FAILURE);
+    }
+
+    sprintf(tokens[*token_counter-1], "+");
+
+    // must increment it not to be included the "+"
+    // in the next token.
+    cursor = current_posision + 1;
+    return cursor;
+}
+
+int AddHyphenToTokenList(char **tokens, char *command_line, int cursor,
+                            int current_posision, int *token_counter)
+{
+    // separator - 
+    *token_counter += 1;
+
+    // need 2 bytes. '-' '\0'
+    tokens[*token_counter-1] = (char *)malloc(sizeof(char)*2);
+    if(tokens[*token_counter-1] == NULL)
+    {
+        fprintf(stderr, "could not allocate sufficient memory for token");
+        exit(EXIT_FAILURE);
+    }
+
+    sprintf(tokens[*token_counter-1], "-");
+
+    // must increment it not to be included the '-'
+    // in the next token.
+    cursor = current_posision + 1;
+    return cursor;
+
+}
+
+int AddAsteriskToTokenList(char **tokens, char *command_line, int cursor,
+                            int current_posision, int *token_counter)
+{
+    // separator * 
+    *token_counter += 1;
+
+    // need 2 bytes. '*' '\0'
+    tokens[*token_counter-1] = (char *)malloc(sizeof(char)*2);
+    if(tokens[*token_counter-1] == NULL)
+    {
+        fprintf(stderr, "could not allocate sufficient memory for token");
+        exit(EXIT_FAILURE);
+    }
+
+    sprintf(tokens[*token_counter-1], "*");
+
+    // must increment it not to be included the '*'
+    // in the next token.
+    cursor = current_posision + 1;
+    return cursor;
+
+}
+
+int AddSlashToTokenList(char **tokens, char *command_line, int cursor,
+                            int current_posision, int *token_counter)
+{
+    // separator / 
+    *token_counter += 1;
+
+    // need 2 bytes. '/' '\0'
+    tokens[*token_counter-1] = (char *)malloc(sizeof(char)*2);
+    if(tokens[*token_counter-1] == NULL)
+    {
+        fprintf(stderr, "could not allocate sufficient memory for token");
+        exit(EXIT_FAILURE);
+    }
+
+    sprintf(tokens[*token_counter-1], "/");
+
+    // must increment it not to be included the '/'
+    // in the next token.
+    cursor = current_posision + 1;
+    return cursor;
+}
+
+int AddPercentToTokenList(char **tokens, char *command_line, int cursor,
+                            int current_posision, int *token_counter)
+{
+    // separator % 
+    *token_counter += 1;
+
+    // need 2 bytes. '%' '\0'
+    tokens[*token_counter-1] = (char *)malloc(sizeof(char)*2);
+    if(tokens[*token_counter-1] == NULL)
+    {
+        fprintf(stderr, "could not allocate sufficient memory for token");
+        exit(EXIT_FAILURE);
+    }
+
+    sprintf(tokens[*token_counter-1], "%%");
+
+    // must increment it not to be included the '%'
+    // in the next token.
+    cursor = current_posision + 1;
     return cursor;
 }
 
