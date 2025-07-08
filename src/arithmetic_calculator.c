@@ -5,54 +5,16 @@
 
 #include "arithmetic_calculator.h"
 
-
-int main(void)
-{
-    char ** tokens = (char **)malloc(sizeof(char*)*100);
-    for(int i=0; i<100; i++)
-        tokens[i] = (char*)malloc(sizeof(char)*10);
-
-    // test case
-    // 1 + 2 - 3 * 4 / 2 
-    // 1 + 2 - 12 / 2
-    // 1 + 2 - 6
-    // 3 - 6
-    // -3
-    tokens[0] = "1";
-    tokens[1] = "+";
-    tokens[2] = "2";
-    tokens[3] = "-";
-    tokens[4] = "3";
-    tokens[5] = "*";
-    tokens[6] = "4";
-    tokens[7] = "/";
-    tokens[8] = "2";
-
-    /*tokens[0] = "1";*/
-    /*tokens[1] = "+";*/
-    /*tokens[2] = "1";*/
-    /*tokens[3] = "+";*/
-    /*tokens[4] = "1";*/
-    /*tokens[5] = "+";*/
-    /*tokens[6] = "1";*/
-    /*tokens[7] = "+";*/
-    /*tokens[8] = "1";*/
-
-    int cursor = 0;
-    int number_of_tokens = 9;
-    arithmetic_node_t* root = NULL;
-    root = BuildArithmeticTree(tokens, cursor, root, number_of_tokens);
-
-    DumpArithmeticTree(root, 0);
-
-    printf("reuslt : %d\n", EvaluateArithmeticTree(root));
-
-    return 0;
-}
-
 int EvaluateArithmeticTree(arithmetic_node_t* node)
 {
     int result = 0;
+
+    if(node->priority == NUMBER)
+    {
+        result = node->value;
+        return result;
+    }
+     
     int left_value;
     int right_value;
 
@@ -77,23 +39,23 @@ int EvaluateArithmeticTree(arithmetic_node_t* node)
         right_value = EvaluateArithmeticTree(node->right_tree);
     }
 
-    if(strtok(node->operation, "+") == 0)
+    if(strcmp(node->operation, "+") == 0)
     {
         result = left_value + right_value;
     }
-    else if(strtok(node->operation, "-") == 0)
+    else if(strcmp(node->operation, "-") == 0)
     {
         result = left_value - right_value;
     }
-    else if(strtok(node->operation, "*") == 0)
+    else if(strcmp(node->operation, "*") == 0)
     {
         result = left_value * right_value;
     }
-    else if(strtok(node->operation, "/") == 0)
+    else if(strcmp(node->operation, "/") == 0)
     {
         result = left_value / right_value;
     }
-    else if(strtok(node->operation, "%") == 0)
+    else if(strcmp(node->operation, "%") == 0)
     {
         result = left_value % right_value;
     }
