@@ -1,11 +1,11 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <stdbool.h>
 
 #include "arithmetic_calculator.h"
 
-int EvaluateArithmeticTree(arithmetic_node_t* node)
+int EvaluateArithmeticTree(arithmetic_node_t* node,
+                           symbol_table_t *symbol_table)
 {
     int result = 0;
 
@@ -26,17 +26,17 @@ int EvaluateArithmeticTree(arithmetic_node_t* node)
     else if(node->left_tree->priority == 3)
     {
         left_value  = node->left_tree->value; 
-        right_value = EvaluateArithmeticTree(node->right_tree);
+        right_value = EvaluateArithmeticTree(node->right_tree, symbol_table);
     }
     else if(node->right_tree->priority == 3)
     {
-        left_value  = EvaluateArithmeticTree(node->left_tree);
+        left_value  = EvaluateArithmeticTree(node->left_tree, symbol_table);
         right_value = node->right_tree->value;
     }
     else
     {
-        left_value  = EvaluateArithmeticTree(node->left_tree);
-        right_value = EvaluateArithmeticTree(node->right_tree);
+        left_value  = EvaluateArithmeticTree(node->left_tree, symbol_table);
+        right_value = EvaluateArithmeticTree(node->right_tree, symbol_table);
     }
 
     if(strcmp(node->operation, "+") == 0)
@@ -63,6 +63,24 @@ int EvaluateArithmeticTree(arithmetic_node_t* node)
     return result;
 
 }
+
+int GetNodeValue(arithmetic_node_t* node, symbol_table_t* symbol_table)
+{
+    int value;
+    if(node->is_variable)
+    {
+        for(int i=0; i<symbol_table->number_of_records;i++)
+        {
+            if(strcmp(node->operation, symbol_table->symbol_name[i]) == 0)
+                value = atoi(symbol_table->values[i]);
+        }
+    }
+    else
+        value = node->value;
+
+    return value;
+}
+
 
 arithmetic_node_t* BuildArithmeticTree(char **tokens, int arithmetic_cursor, 
                         arithmetic_node_t* root, int number_of_tokens)
@@ -184,10 +202,11 @@ arithmetic_node_t* CreateArithmeticNode()
     node               = (arithmetic_node_t*)malloc(sizeof(arithmetic_node_t));
 
     /* initialization */
-    node -> value      = 0;
-    node -> operation  = (char*)malloc(sizeof(char)*10);
-    node -> left_tree  = NULL;
-    node -> right_tree = NULL;
+    node -> value       = 0;
+    node -> is_variable = false;
+    node -> operation   = (char*)malloc(sizeof(char)*10);
+    node -> left_tree   = NULL;
+    node -> right_tree  = NULL;
 
     return node;
 }
