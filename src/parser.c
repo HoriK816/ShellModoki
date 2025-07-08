@@ -366,45 +366,6 @@ int ParseWHILE(char **tokens, ast_node_t *node,
     return cursor;
 }
 
-int ParseConditionOperand(char **tokens, char** operand,
-                          int current_cursor, int *number_of_operand_tokens)
-{
-    int cursor = current_cursor;
-
-    /* variable or arithmetic expression */
-    if(strcmp(tokens[cursor], "$") == 0)
-    {
-        cursor += 1; // consume '$'
-                      
-        /* arithmetic calculation */
-        if(strcmp(tokens[cursor], "((") == 0)
-        {
-            cursor += 1; // consume "(("
-            int i = 0;
-            while(strcmp(tokens[cursor], "))") == 0)
-            {
-                operand[i] = tokens[cursor+i];
-                *number_of_operand_tokens += 1;
-            }
-        }
-        else
-        {
-            // TODO: write process for variables
-        }
-    }
-
-    /* just a number */
-    else
-    {
-        operand[*number_of_operand_tokens] = tokens[cursor];
-        *number_of_operand_tokens += 1;
-
-        cursor += 1; // consume number
-    }
-
-    return cursor;
-}
-
 int ParseCondition(char **tokens, ast_node_t *node, 
                    int current_cursor, int number_of_tokens)
 {
@@ -421,7 +382,9 @@ int ParseCondition(char **tokens, ast_node_t *node,
 
     /* comparison operation */
     condition_node->operation = tokens[cursor];
-    cursor += 1;                 // consume comparison operation
+    int len = strlen(tokens[cursor+1]);
+    strncat(condition_node->operation, tokens[cursor+1], len);
+    cursor += 2;                 // consume comparison operation
 
     /* operand 2 */
     cursor = ParseConditionOperand(tokens, condition_node->operand2, cursor,
@@ -440,6 +403,65 @@ int ParseCondition(char **tokens, ast_node_t *node,
     {
         while_node_t* while_node = (while_node_t*)node;
         while_node->condition = condition_node;
+    }
+
+    return cursor;
+}
+
+int ParseConditionOperand(char **tokens, char** operand,
+                          int current_cursor, int *number_of_operand_tokens)
+{
+    int cursor = current_cursor;
+
+    /* variable or arithmetic expression */
+    if(strcmp(tokens[cursor], "$") == 0)
+    {
+        cursor += 1; // consume '$'
+                      
+        /* arithmetic calculation */
+        if(strcmp(tokens[cursor], "((") == 0)
+        {
+            cursor += 1; // consume "(("
+            int i = 0;
+            while(strcmp(tokens[cursor], "))") != 0)
+            {
+                operand[i] = tokens[cursor];
+                *number_of_operand_tokens += 1;
+                i++;
+                cursor++;
+            }
+            cursor += 1; // consume "))"
+        }
+
+        /* just a variable */
+        else
+        {
+            operand[*number_of_operand_tokens] = tokens[cursor];    
+            *number_of_operand_tokens += 1;
+            cursor += 1; // consume the variable name
+        }
+    }
+
+    /* just a number */
+    else
+    {
+        /* positive number */
+        if(strcmp(tokens[cursor], "-") != 0)
+        {
+            operand[*number_of_operand_tokens] = tokens[cursor];
+            *number_of_operand_tokens += 1;
+            cursor += 1; // consume the number
+        }
+    
+        /* negative number */
+        else
+        {
+            operand[*number_of_operand_tokens] = tokens[cursor];
+            int len = strlen(tokens[cursor+1]);
+            strncat(operand[*number_of_operand_tokens], tokens[cursor+1], len);
+            *number_of_operand_tokens += 1;
+            cursor += 2; // consume '-' and number
+        }
     }
 
     return cursor;

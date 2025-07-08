@@ -4,6 +4,7 @@
 #include<unistd.h>
 #include<sys/wait.h>
 
+#include "arithmetic_calculator.h"
 #include "executor.h"
 #include "history.h"
 
@@ -155,8 +156,22 @@ bool EvaluateConditionNode(condition_node_t* condition)
 
 
     /* evaluate given operands */
-    int operand1 = condition->operand1;
-    int operand2 = condition->operand2;
+    arithmetic_node_t *operand1_root = NULL;
+    arithmetic_node_t *operand2_root = NULL;
+    
+    int cursor = 0;
+    operand1_root = BuildArithmeticTree(condition->operand1, cursor, 
+                                        operand1_root,
+                                        condition->number_of_operand1_tokens); 
+    DumpArithmeticTree(operand1_root, 0);
+    cursor = 0;
+    operand2_root = BuildArithmeticTree(condition->operand2, cursor,
+                                        operand2_root,
+                                        condition->number_of_operand2_tokens);
+    DumpArithmeticTree(operand2_root, 0);
+
+    int operand1 = EvaluateArithmeticTree(operand1_root);
+    int operand2 = EvaluateArithmeticTree(operand2_root);
     bool is_true = false;
     switch(operator)
     {
