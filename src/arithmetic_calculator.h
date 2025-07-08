@@ -1,3 +1,5 @@
+#pragma once
+
 typedef enum
 {
     PLUS     = 1,
