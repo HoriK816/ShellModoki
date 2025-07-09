@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <ctype.h>
 
 #include "arithmetic_calculator.h"
 
@@ -11,7 +12,7 @@ int EvaluateArithmeticTree(arithmetic_node_t* node,
 
     if(node->priority == NUMBER)
     {
-        result = node->value;
+        result = GetNodeValue(node, symbol_table);
         return result;
     }
      
@@ -20,18 +21,18 @@ int EvaluateArithmeticTree(arithmetic_node_t* node,
 
     if(node->left_tree->priority == 3 && node->right_tree->priority == 3)
     {
-        left_value  = node->left_tree->value; 
-        right_value = node->right_tree->value;
+        left_value  = GetNodeValue(node->left_tree, symbol_table);
+        right_value = GetNodeValue(node->right_tree, symbol_table);
     }
     else if(node->left_tree->priority == 3)
     {
-        left_value  = node->left_tree->value; 
+        left_value  = GetNodeValue(node->left_tree, symbol_table);
         right_value = EvaluateArithmeticTree(node->right_tree, symbol_table);
     }
     else if(node->right_tree->priority == 3)
     {
         left_value  = EvaluateArithmeticTree(node->left_tree, symbol_table);
-        right_value = node->right_tree->value;
+        right_value = GetNodeValue(node->right_tree, symbol_table);
     }
     else
     {
@@ -72,7 +73,7 @@ int GetNodeValue(arithmetic_node_t* node, symbol_table_t* symbol_table)
         for(int i=0; i<symbol_table->number_of_records;i++)
         {
             if(strcmp(node->operation, symbol_table->symbol_name[i]) == 0)
-                value = atoi(symbol_table->values[i]);
+                value = *symbol_table->values[i];
         }
     }
     else
@@ -167,16 +168,22 @@ arithmetic_node_t* InsertOperand(char **tokens, int *current_cursor,
 
     /* prepare new operand node */
     arithmetic_node_t* new_node = CreateArithmeticNode();
-    new_node->value             = atoi(tokens[*cursor]);
 
+    /* set the value */
+    if(isdigit(tokens[*cursor][0]))
+        new_node->value        = atoi(tokens[*cursor]);
+    else
+    {
+        new_node-> operation   = tokens[*cursor]; // set the variable name
+        new_node-> is_variable = true;
+    }
     new_node->priority = NUMBER;
 
     *cursor += 1; // consume an operand 
 
+    /* insert */
     if(root == NULL)                
-    {
         root = new_node;
-    }
     else
     {
         arithmetic_node_t *insert_spot = root;
@@ -192,7 +199,6 @@ arithmetic_node_t* InsertOperand(char **tokens, int *current_cursor,
         insert_spot->right_tree = (arithmetic_node_t*)malloc(sizeof(arithmetic_node_t));
         insert_spot->right_tree = new_node;
     }
-
     return root;
 }
 
@@ -212,7 +218,8 @@ arithmetic_node_t* CreateArithmeticNode()
 }
 
 
-void DumpArithmeticTree(arithmetic_node_t* node, int level)
+void DumpArithmeticTree(arithmetic_node_t* node, int level, 
+                        symbol_table_t* symbol_table)
 {
     if(3 <= node->priority)
         return;
@@ -229,7 +236,7 @@ void DumpArithmeticTree(arithmetic_node_t* node, int level)
                 printf("\t");
             for(int i=0; i<4;i++)
                 printf("-");
-            printf("value %d\n", node->right_tree->value);
+            printf("value %d\n", GetNodeValue(node->right_tree, symbol_table));
         }
     }
 
@@ -241,14 +248,14 @@ void DumpArithmeticTree(arithmetic_node_t* node, int level)
                 printf("\t");
             for(int i=0; i<4;i++)
                 printf("-");
-            printf("value %d\n", node->left_tree->value);
+            printf("value %d\n", GetNodeValue(node->left_tree, symbol_table));
         }
     }
 
     level++;
     if(node->right_tree != NULL)
-        DumpArithmeticTree(node->right_tree, level);
+        DumpArithmeticTree(node->right_tree, level, symbol_table);
     if(node->left_tree != NULL)
-        DumpArithmeticTree(node->left_tree,  level);
+        DumpArithmeticTree(node->left_tree,  level, symbol_table);
 
 }

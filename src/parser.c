@@ -413,36 +413,35 @@ int ParseConditionOperand(char **tokens, char** operand,
 {
     int cursor = current_cursor;
 
-    /* variable or arithmetic expression */
-    if(strcmp(tokens[cursor], "$") == 0)
+    /* arithmetic expression */
+    if(strcmp(tokens[cursor], "$") == 0 
+           && strcmp(tokens[cursor+1], "((") == 0)
     {
-        cursor += 1; // consume '$'
+        cursor += 2; // consume "$" , "(("
                       
-        /* arithmetic calculation */
-        if(strcmp(tokens[cursor], "((") == 0)
+        int i = 0;
+        while(strcmp(tokens[cursor], "))") != 0)
         {
-            cursor += 1; // consume "(("
-            int i = 0;
-            while(strcmp(tokens[cursor], "))") != 0)
-            {
-                operand[i] = tokens[cursor];
-                *number_of_operand_tokens += 1;
-                i++;
-                cursor++;
-            }
-            cursor += 1; // consume "))"
-        }
-
-        /* just a variable */
-        else
-        {
-            operand[*number_of_operand_tokens] = tokens[cursor];    
+            operand[i] = tokens[cursor];
             *number_of_operand_tokens += 1;
-            cursor += 1; // consume the variable name
+            i++;
+            cursor++;
         }
+        cursor += 1; // consume "))"
+    }
+    
+    /* variable */
+    else if(tokens[cursor][0] == '$')
+    {
+        /* truncate the first '$'  */
+        char * variable_name = tokens[cursor] + sizeof(char);
+
+        operand[*number_of_operand_tokens] = variable_name;    
+        *number_of_operand_tokens += 1;
+        cursor += 1; // consume the variable name
     }
 
-    /* just a number */
+    /* number */
     else
     {
         /* positive number */

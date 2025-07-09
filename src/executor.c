@@ -20,7 +20,8 @@ void ExecTree(ast_node_t * node, symbol_table_t *symbol_table)
         if_node_t* if_node;
         if_node = (if_node_t*)node;
 
-        bool is_true = EvaluateConditionNode(if_node->condition);
+        bool is_true = EvaluateConditionNode(if_node->condition, 
+                                             symbol_table);
         if(is_true)
         {
             ExecTree(if_node->process, symbol_table);
@@ -33,7 +34,8 @@ void ExecTree(ast_node_t * node, symbol_table_t *symbol_table)
         while_node_t* while_node;
         while_node = (while_node_t*)node;
 
-        bool is_true = EvaluateConditionNode(while_node->condition);
+        bool is_true = EvaluateConditionNode(while_node->condition,
+                                             symbol_table);
         while(is_true)
         {
             ExecTree(while_node->process, symbol_table);
@@ -131,7 +133,8 @@ bool ExecBinaryOperator(binary_operator_node_t *binary_node)
 }
 
 
-bool EvaluateConditionNode(condition_node_t* condition)
+bool EvaluateConditionNode(condition_node_t* condition,
+                           symbol_table_t *symbol_table)
 {
     /* set the corresponded operator */
     enum comparison_operator operator;
@@ -163,15 +166,15 @@ bool EvaluateConditionNode(condition_node_t* condition)
     operand1_root = BuildArithmeticTree(condition->operand1, cursor, 
                                         operand1_root,
                                         condition->number_of_operand1_tokens); 
-    DumpArithmeticTree(operand1_root, 0);
+    DumpArithmeticTree(operand1_root, 0, symbol_table);
     cursor = 0;
     operand2_root = BuildArithmeticTree(condition->operand2, cursor,
                                         operand2_root,
                                         condition->number_of_operand2_tokens);
-    DumpArithmeticTree(operand2_root, 0);
+    DumpArithmeticTree(operand2_root, 0, symbol_table);
 
-    int operand1 = EvaluateArithmeticTree(operand1_root);
-    int operand2 = EvaluateArithmeticTree(operand2_root);
+    int operand1 = EvaluateArithmeticTree(operand1_root, symbol_table);
+    int operand2 = EvaluateArithmeticTree(operand2_root, symbol_table);
     bool is_true = false;
     switch(operator)
     {

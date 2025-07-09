@@ -38,4 +38,8 @@ arithmetic_node_t* BuildArithmeticTree(char **tokens, int arithmetic_cursor,
 
 int EvaluateArithmeticTree(arithmetic_node_t* node,
                            symbol_table_t *symbol_table);
-void DumpArithmeticTree(arithmetic_node_t* node, int level);
+
+int GetNodeValue(arithmetic_node_t* node, symbol_table_t* symbol_table);
+
+void DumpArithmeticTree(arithmetic_node_t* node, int level, 
+                        symbol_table_t* symbol_table);
