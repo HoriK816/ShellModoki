@@ -138,6 +138,10 @@ char** TokenizeOneLine(char *command_line)
                                            cursor, i, &token_counter);
         }
     }
+    
+    /* Append a token for '\n' at the end of tokens */
+    AddBreakLineToTokenList(tokens, &token_counter);
+
     return tokens;
 }
 
@@ -409,6 +413,22 @@ int AddPercentToTokenList(char **tokens, char *command_line, int cursor,
     // in the next token.
     cursor = current_posision + 1;
     return cursor;
+}
+
+void AddBreakLineToTokenList(char **tokens, int *token_counter)
+{
+    // separator '\n' 
+    *token_counter += 1;
+
+    // need 2 bytes. '\n' '\0'
+    tokens[*token_counter-1] = (char *)malloc(sizeof(char)*2);
+    if(tokens[*token_counter-1] == NULL)
+    {
+        fprintf(stderr, "could not allocate sufficient memory for token");
+        exit(EXIT_FAILURE);
+    }
+
+    sprintf(tokens[*token_counter-1], "\n");
 }
 
 int CountTokens(char **tokens)

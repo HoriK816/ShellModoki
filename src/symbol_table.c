@@ -72,7 +72,6 @@ void StoreVariable(variable_define_node_t *variable_node,
             *symbol_table->values[i]
                 = EvaluateArithmeticTree(value_root, symbol_table);
             
-            
             return;
         }
     }

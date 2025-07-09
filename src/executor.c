@@ -39,6 +39,9 @@ void ExecTree(ast_node_t * node, symbol_table_t *symbol_table)
         while(is_true)
         {
             ExecTree(while_node->process, symbol_table);
+
+            is_true = EvaluateConditionNode(while_node->condition,
+                                            symbol_table);
         }
         return;
     }
@@ -46,7 +49,7 @@ void ExecTree(ast_node_t * node, symbol_table_t *symbol_table)
     {
         command_node_t *command_node;
         command_node = (command_node_t*)node;
-        ExecCommand(command_node);
+        ExecCommand(command_node, symbol_table);
         return;
     }
     else if(node->type == BINARY_OPERATION)
@@ -54,7 +57,7 @@ void ExecTree(ast_node_t * node, symbol_table_t *symbol_table)
         binary_operator_node_t *binary_node;
         binary_node = (binary_operator_node_t*)node;
 
-        ExecBinaryOperator(binary_node);
+        ExecBinaryOperator(binary_node, symbol_table);
         return;
     }
     else if(node->type ==  VARIABLE_DIFINITION)
@@ -74,7 +77,8 @@ void ExecTree(ast_node_t * node, symbol_table_t *symbol_table)
     }
 }
 
-bool ExecBinaryOperator(binary_operator_node_t *binary_node)
+bool ExecBinaryOperator(binary_operator_node_t *binary_node,
+                        symbol_table_t* symbol_table)
 {
 
     bool result;
@@ -83,7 +87,7 @@ bool ExecBinaryOperator(binary_operator_node_t *binary_node)
     pid_t status;
     int exit_code;
     if(binary_node->left->type == COMMAND){
-        status = ExecCommand((command_node_t*)binary_node->left);
+        status = ExecCommand((command_node_t*)binary_node->left, symbol_table);
 
         exit_code = WEXITSTATUS(status);
         if(exit_code == 0){
@@ -98,7 +102,8 @@ bool ExecBinaryOperator(binary_operator_node_t *binary_node)
     bool is_success;
     if(binary_node->left->type == BINARY_OPERATION){
         is_success = ExecBinaryOperator(
-                        (binary_operator_node_t*)binary_node->left); 
+                        (binary_operator_node_t*)binary_node->left,
+                        symbol_table); 
 
         if(is_success){
             if(strcmp(binary_node->operation, "||") == 0)
@@ -113,7 +118,8 @@ bool ExecBinaryOperator(binary_operator_node_t *binary_node)
 
     // right branch
     if(binary_node->right->type == COMMAND){
-        status = ExecCommand((command_node_t*)binary_node->right);
+        status = ExecCommand((command_node_t*)binary_node->right,
+                             symbol_table);
         exit_code = WEXITSTATUS(status);
 
         if(exit_code == 0 )
@@ -122,7 +128,8 @@ bool ExecBinaryOperator(binary_operator_node_t *binary_node)
 
     if(binary_node->right->type == BINARY_OPERATION){
         is_success = ExecBinaryOperator(
-                        (binary_operator_node_t*)binary_node->right); 
+                        (binary_operator_node_t*)binary_node->right,
+                        symbol_table); 
 
         if(is_success)
             result = true;
@@ -166,12 +173,12 @@ bool EvaluateConditionNode(condition_node_t* condition,
     operand1_root = BuildArithmeticTree(condition->operand1, cursor, 
                                         operand1_root,
                                         condition->number_of_operand1_tokens); 
-    DumpArithmeticTree(operand1_root, 0, symbol_table);
+    /*DumpArithmeticTree(operand1_root, 0, symbol_table);*/
     cursor = 0;
     operand2_root = BuildArithmeticTree(condition->operand2, cursor,
                                         operand2_root,
                                         condition->number_of_operand2_tokens);
-    DumpArithmeticTree(operand2_root, 0, symbol_table);
+    /*DumpArithmeticTree(operand2_root, 0, symbol_table);*/
 
     int operand1 = EvaluateArithmeticTree(operand1_root, symbol_table);
     int operand2 = EvaluateArithmeticTree(operand2_root, symbol_table);
@@ -212,15 +219,27 @@ bool EvaluateConditionNode(condition_node_t* condition,
     return is_true;
 }
 
-pid_t ExecCommand(command_node_t *command_node)
+pid_t ExecCommand(command_node_t *command_node, symbol_table_t* symbol_table)
 {
     pid_t status;
     char *command_pointer[10];
     
     command_pointer[0] = command_node->command;
 
+    /* prepare backups */
+    char ** backup_args = (char**)malloc(sizeof(char*)*100);
+    for(int i=0; i<100; i++)
+        backup_args[i] = (char*)malloc(sizeof(char) * 100);
+    for(int i=0; i<command_node->number_of_args; i++)
+        strcpy(backup_args[i], command_node->args[i]);
+
+    ExtractVariable(command_node->args,
+                    command_node->number_of_args,
+                    symbol_table);
+
     for(int i=0;i<(command_node->number_of_args);i++)
         command_pointer[i+1] = (command_node->args)[i];
+
     command_pointer[command_node->number_of_args+1] = NULL;
 
     // exit
@@ -250,5 +269,34 @@ pid_t ExecCommand(command_node_t *command_node)
         wait(&status);
 
     }
+    
+    /* recover args */
+    for(int i=0; i<command_node->number_of_args; i++)
+        strcpy(command_node->args[i], backup_args[i]);
+
     return status;
+}
+
+void ExtractVariable(char **args, int number_of_args,
+                     symbol_table_t *symbol_table)
+{
+    for(int i=0; i<number_of_args; i++)
+    {
+        // discard '$'
+        char *name = strchr(args[i], '$');
+        if(name == NULL)
+            continue;
+
+        /* truncate the first '$' */
+        name++;
+
+        for(int j=0; j<symbol_table->number_of_records;j++)
+        {
+            if(strcmp(name, symbol_table->symbol_name[j]) == 0)
+            {
+                sprintf(args[i], "%d", *symbol_table->values[j]);
+                break;
+            }
+        }
+    }
 }

@@ -19,12 +19,9 @@ int BuildParseTree(char **tokens, ast_node_t *node,
     enum read_mode mode;
     while(cursor < number_of_tokens)
     {
-        // TODO: This judgement should be separated int a function.
         if((strcmp(tokens[cursor], "fi") == 0)
                 || (strcmp(tokens[cursor], "done") == 0))
         {
-            // dont't consume "fi" or "done", because the parent function consumes it.
-            // printf(" detect the end " );
             break;
         }
 
@@ -44,7 +41,7 @@ int BuildParseTree(char **tokens, ast_node_t *node,
 
             /* binary operators */
             case PARSE_VARIABLE:
-                ExtractVariable(tokens, cursor, symbol_table);
+                // ExtractVariable(tokens, cursor, symbol_table);
                 break;
 
             case PARSE_SEMICOLON:
@@ -122,22 +119,22 @@ enum read_mode DecideNextMode(char **tokens, int cursor, int number_of_tokens)
 
 }
 
-void ExtractVariable(char **tokens, int current_cursor,
-                     symbol_table_t *symbol_table)
-{
-    // discard '$'
-    char *name = strchr(tokens[current_cursor], '$');
+/*void ExtractVariable(char **tokens, int current_cursor,*/
+                     /*symbol_table_t *symbol_table)*/
+/*{*/
+    /*// discard '$'*/
+    /*char *name = strchr(tokens[current_cursor], '$');*/
     
-    if(name == NULL)
-        return;
-    name++;
+    /*if(name == NULL)*/
+        /*return;*/
+    /*name++;*/
 
-    for(int i=0; i<symbol_table->number_of_records;i++)
-    {
-        if(strcmp(name, symbol_table->symbol_name[i]) == 0)
-            sprintf(tokens[current_cursor], "%d", *symbol_table->values[i]);
-    }
-}
+    /*for(int i=0; i<symbol_table->number_of_records;i++)*/
+    /*{*/
+        /*if(strcmp(name, symbol_table->symbol_name[i]) == 0)*/
+            /*sprintf(tokens[current_cursor], "%d", *symbol_table->values[i]);*/
+    /*}*/
+/*}*/
 
 int ParseCommand(char **tokens, ast_node_t *node,
                  int current_cursor, int number_of_tokens,
@@ -162,7 +159,11 @@ int ParseCommand(char **tokens, ast_node_t *node,
             break;
         if(strcmp(token, "done")==0)
             break;
-
+        if(strcmp(token, "\n") == 0)
+        {
+            cursor += 1; // consume '\n'
+            break;
+        }
 
         if(mode == READ_COMMAND_NAME)
         {
@@ -188,7 +189,7 @@ int ParseCommand(char **tokens, ast_node_t *node,
         }
         else if(mode == READ_COMMAND_ARGS)
         {
-            ExtractVariable(tokens, cursor, symbol_table);
+            // ExtractVariable(tokens, cursor, symbol_table);
 
             // record args 
             int add_position = command_node->number_of_args;
@@ -201,6 +202,7 @@ int ParseCommand(char **tokens, ast_node_t *node,
         if(mode == READ_COMMAND_NAME)
             mode = READ_COMMAND_ARGS;
     }
+
     return cursor;
 }
 
@@ -293,6 +295,7 @@ int ParseVariableDifinition(char **tokens, ast_node_t *node,
     cursor = ParseConditionOperand(tokens, variable_node->value_string,
                                    cursor ,
                                    &variable_node->number_of_value_tokens);
+    cursor += 1; // consume "\n" tokens
 
     // add this node to AST tree
     if(node->type  == BINARY_OPERATION)
@@ -307,8 +310,6 @@ int ParseVariableDifinition(char **tokens, ast_node_t *node,
         node->children[add_position] = (struct ast_node_t*)variable_node;
         node->number_of_children++;
     }
-    // there are "variable_name", "=" and "value" , so add 3
-    cursor += 3;
 
     return cursor;
 }
@@ -327,14 +328,14 @@ int ParseIF(char **tokens, ast_node_t *node,
     cursor = ParseCondition(tokens, (ast_node_t*)if_node, cursor,
                             number_of_tokens);
     
-    // consume ';' "then" tokens
-    cursor += 2;
+    // consume ';' "then" "\n" tokens
+    cursor += 3;
 
     cursor = BuildParseTree(tokens, if_node->process, cursor,
                             number_of_tokens, symbol_table);
 
-    // consume an "fi" token
-    cursor += 1;
+    // consume an "fi" "\n" token
+    cursor += 2;
     
     node->children[node->number_of_children] = (ast_node_t*)if_node;
     node->number_of_children++;
@@ -356,14 +357,14 @@ int ParseWHILE(char **tokens, ast_node_t *node,
     cursor = ParseCondition(tokens, (ast_node_t*)while_node, cursor,
                             number_of_tokens);
 
-    // consume an "do" token
-    cursor += 1;
+    // consume an "\n" "do" "\n" tokens
+    cursor += 3;
 
     cursor = BuildParseTree(tokens, while_node->process, cursor,
                             number_of_tokens, symbol_table);
 
-    // consume an "done" token
-    cursor += 1;
+    // consume an "done" "\n" tokens
+    cursor += 2;
 
     node->children[node->number_of_children] = (ast_node_t*)while_node;
     node->number_of_children++;

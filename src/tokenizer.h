@@ -41,5 +41,8 @@ int AddSlashToTokenList(char **tokens, char *command_line, int cursor,
 
 int AddPercentToTokenList(char **tokens, char *command_line, int cursor,
                             int current_posision, int *token_counter);
+
+void AddBreakLineToTokenList(char **tokens, int *token_counter);
+
 // for debugging
 void DumpTokenizeResult(char **tokens, int number_of_tokens);
