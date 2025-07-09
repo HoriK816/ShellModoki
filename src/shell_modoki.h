@@ -14,6 +14,7 @@ enum node_type
     BINARY_OPERATION,
     VARIABLE_DIFINITION,
     IF,
+    ELSE,
     WHILE,
     CONDITION,
 };
@@ -53,8 +54,17 @@ typedef struct
     ast_node_t          node;              // base struct
     condition_node_t*   condition;
     ast_node_t*         process;
+    bool                is_executed;
 }
 if_node_t;
+
+typedef struct
+{
+    ast_node_t          node;              // base struct
+    ast_node_t*         process;
+    bool                is_executed;
+}
+else_node_t;
 
 typedef struct
 {

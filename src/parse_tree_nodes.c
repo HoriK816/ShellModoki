@@ -81,6 +81,30 @@ if_node_t* CreateIFNode()
     if_node->process->number_of_children = 0;
     if_node->process->children = (ast_node_t**)malloc(sizeof(ast_node_t*)*10);
     
+    if_node->is_executed = false;
+
+    return if_node;
+}
+
+if_node_t* CreateELSENode()
+{
+    if_node_t *if_node = (if_node_t*)malloc(sizeof(if_node_t));
+    if(if_node == NULL)
+    {
+        fprintf(stderr, "could not allocate sufficient memroy for if node");
+        exit(EXIT_FAILURE);
+    }
+    
+    (if_node->node).type = ELSE;
+    (if_node->node).number_of_children = 0;
+
+    if_node->process = (ast_node_t*)malloc(sizeof(ast_node_t));
+    if_node->process->type = ROOT;
+    if_node->process->number_of_children = 0;
+    if_node->process->children = (ast_node_t**)malloc(sizeof(ast_node_t*)*10);
+    
+    if_node->is_executed = false;
+
     return if_node;
 }
 

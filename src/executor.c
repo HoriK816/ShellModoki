@@ -25,9 +25,19 @@ void ExecTree(ast_node_t * node, symbol_table_t *symbol_table)
         if(is_true)
         {
             ExecTree(if_node->process, symbol_table);
+            if_node->is_executed = true;
         }
 
         return;
+    }
+    else if(node->type == ELSE)
+    {
+        if_node_t* else_node;
+        else_node = (if_node_t*)node;
+
+        ExecTree(else_node->process, symbol_table);
+        else_node->is_executed = true;
+
     }
     else if(node->type == WHILE)
     {
@@ -69,18 +79,64 @@ void ExecTree(ast_node_t * node, symbol_table_t *symbol_table)
         return;
     }
 
-    
-    for(int i=0;i<node->number_of_children;i++){
+    int cursor = 0;
+    while(cursor < node->number_of_children)
+    {
         ast_node_t *next_node;
-        next_node  = (ast_node_t *)node->children[i];
-        ExecTree(next_node, symbol_table);
+        next_node  = (ast_node_t *)node->children[cursor];
+        if(next_node->type == IF)
+        {
+            cursor = ProcessIFNode(node, cursor, 
+                              node->number_of_children, symbol_table);
+        }
+        else
+        {
+            ExecTree(next_node, symbol_table);
+            cursor++;
+        }
     }
 }
+
+int ProcessIFNode(ast_node_t* node, int base_index, int number_of_children,
+                  symbol_table_t* symbol_table)
+{
+    /* check if coverage */
+    int number_of_if_nodes = 0; 
+    for(int i=base_index; i<number_of_children; i++)
+    {
+        ast_node_t* temp_node = node->children[i];
+        if(! ((temp_node->type == IF) || (temp_node->type == ELSE)))
+            break;
+
+        number_of_if_nodes++;
+    }
+
+    /* exec if nodes */
+    for(int i=0; i<number_of_if_nodes; i++)
+    {
+        ExecTree((ast_node_t*)node->children[base_index+i], symbol_table);
+        ast_node_t* temp_node   = node->children[base_index + i];
+        if_node_t* temp_if_node = (if_node_t*)temp_node;
+        if(temp_if_node->is_executed)
+            break;
+    }
+
+    /* reset is_executed */
+    for(int i=0; i<number_of_if_nodes; i++)
+    {
+        ast_node_t* temp_node   = node->children[base_index + i];
+        if_node_t* temp_if_node = (if_node_t*)temp_node;
+        temp_if_node->is_executed = false;
+
+    }
+
+    return base_index + number_of_if_nodes;
+}
+
 
 bool ExecBinaryOperator(binary_operator_node_t *binary_node,
                         symbol_table_t* symbol_table)
 {
-
     bool result;
 
     // left branch 

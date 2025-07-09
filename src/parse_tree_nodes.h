@@ -11,3 +11,4 @@ command_node_t* CreateCommandNode(char *token);
 variable_define_node_t* CreateVariableDefinitionNode();
 binary_operator_node_t *CreateBinaryOperatorNode();
 while_node_t* CreateWHILENode();
+if_node_t* CreateELSENode();

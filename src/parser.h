@@ -36,6 +36,10 @@ int ParseIF(char **tokens, ast_node_t *node,
             int current_cursor, int number_of_tokens,
             symbol_table_t *symbol_table);
 
+int ParseELSE(char **tokens, ast_node_t *node, 
+            int current_cursor, int number_of_tokens,
+            symbol_table_t *symbol_table);
+
 int ParseWHILE(char **tokens, ast_node_t *node, 
             int current_cursor, int number_of_tokens,
             symbol_table_t *symbol_table);

@@ -13,3 +13,6 @@ bool EvaluateConditionNode(condition_node_t* condition,
                            symbol_table_t *symbol_table);
 void ExtractVariable(char **args, int number_of_args,
                      symbol_table_t *symbol_table);
+
+int ProcessIFNode(ast_node_t* node, int base_index, int number_of_children,
+                  symbol_table_t* symbol_table);
