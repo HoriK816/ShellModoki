@@ -62,7 +62,7 @@ void ExecTree(ast_node_t * node, symbol_table_t *symbol_table)
         variable_define_node_t *variable_node;
         variable_node = (variable_define_node_t*)node;
 
-        StoreVaribale(variable_node, symbol_table);
+        StoreVariable(variable_node, symbol_table);
         return;
     }
 

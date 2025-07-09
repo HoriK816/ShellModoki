@@ -77,6 +77,8 @@ typedef struct
 {
     ast_node_t          node;
     char*               variable_name;
+    char**              value_string;
+    int                 number_of_value_tokens;
 
     /* ShellModoki supports only integer as variables */
     int                 value;

@@ -26,7 +26,7 @@ int ParseOR(char **tokens, ast_node_t *node,
              int current_cursor, int number_of_tokens,
              symbol_table_t *symbol_table);
 
-int ParseVaribleDifinition(char **tokens, ast_node_t *node,
+int ParseVariableDifinition(char **tokens, ast_node_t *node,
              int current_cursor, int number_of_tokens);
 
 void ExtractVariable(char **tokens, int current_cursor,

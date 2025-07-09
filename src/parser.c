@@ -38,7 +38,7 @@ int BuildParseTree(char **tokens, ast_node_t *node,
                 break;
 
             case PARSE_VARIABLE_DIFINITION:
-                cursor = ParseVaribleDifinition(tokens, subtree_node, cursor,
+                cursor = ParseVariableDifinition(tokens, subtree_node, cursor,
                                                 number_of_tokens);
                 break;
 
@@ -233,7 +233,7 @@ int ParseAND(char **tokens, ast_node_t *node,
                                            number_of_tokens, symbol_table);
             break;
         case PARSE_VARIABLE_DIFINITION:
-            cursor = ParseVaribleDifinition(tokens, (ast_node_t*)and_node,
+            cursor = ParseVariableDifinition(tokens, (ast_node_t*)and_node,
                                             cursor, number_of_tokens);
             break;
         default:
@@ -271,7 +271,7 @@ int ParseOR(char **tokens, ast_node_t *node,
                                            number_of_tokens, symbol_table);
             break;
         case PARSE_VARIABLE_DIFINITION:
-            cursor = ParseVaribleDifinition(tokens, (ast_node_t*)or_node,
+            cursor = ParseVariableDifinition(tokens, (ast_node_t*)or_node,
                                             cursor, number_of_tokens);
             break;
         default:
@@ -280,14 +280,19 @@ int ParseOR(char **tokens, ast_node_t *node,
     return cursor;
 }
 
-int ParseVaribleDifinition(char **tokens, ast_node_t *node,
+int ParseVariableDifinition(char **tokens, ast_node_t *node,
              int current_cursor, int number_of_tokens)
 {
     int cursor = current_cursor;
     variable_define_node_t *variable_node = CreateVariableDefinitionNode();
     
+    /* set values */
     variable_node->variable_name = tokens[cursor];
-    variable_node->value = atoi(tokens[cursor+2]);
+    cursor += 2; // consume a variable name and '='
+
+    cursor = ParseConditionOperand(tokens, variable_node->value_string,
+                                   cursor ,
+                                   &variable_node->number_of_value_tokens);
 
     // add this node to AST tree
     if(node->type  == BINARY_OPERATION)

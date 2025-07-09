@@ -4,6 +4,7 @@
 #include<stdbool.h>
 
 #include "symbol_table.h"
+#include "arithmetic_calculator.h"
 
 symbol_table_t* CreateSymbolTable(void)
 {
@@ -50,7 +51,7 @@ void FreeSymbolTable(symbol_table_t *symbol_table)
     free(symbol_table);
 }
 
-void StoreVaribale(variable_define_node_t *variable_node,
+void StoreVariable(variable_define_node_t *variable_node,
                    symbol_table_t* symbol_table)
 {
     char *name = variable_node->variable_name;
@@ -59,7 +60,19 @@ void StoreVaribale(variable_define_node_t *variable_node,
     {
         if(strcmp(name, symbol_table->symbol_name[i]) == 0)
         {
-            *symbol_table->values[i] = variable_node->value;
+            // *symbol_table->values[i] = variable_node->value;
+            
+            arithmetic_node_t *value_root = NULL;
+            int cursor = 0;
+            value_root 
+                = BuildArithmeticTree(variable_node->value_string,
+                                      cursor,
+                                      value_root,
+                                      variable_node->number_of_value_tokens);
+            *symbol_table->values[i]
+                = EvaluateArithmeticTree(value_root, symbol_table);
+            
+            
             return;
         }
     }
@@ -83,6 +96,18 @@ void StoreVaribale(variable_define_node_t *variable_node,
                 "could not allocate sufficient memory for symbol table");
         exit(EXIT_FAILURE);
     }
-    *symbol_table->values[last] = variable_node->value;
+    // *symbol_table->values[last] = variable_node->value;
+
+    arithmetic_node_t *value_root = NULL;
+    int cursor = 0;
+    value_root 
+        = BuildArithmeticTree(variable_node->value_string,
+                              cursor,
+                              value_root,
+                              variable_node->number_of_value_tokens);
+    *symbol_table->values[last]
+        = EvaluateArithmeticTree(value_root, symbol_table);
+            
+
     symbol_table->number_of_records++;
 }

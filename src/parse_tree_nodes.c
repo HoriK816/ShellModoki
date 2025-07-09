@@ -146,6 +146,13 @@ variable_define_node_t* CreateVariableDefinitionNode()
     }
     (variable_node->node).type = VARIABLE_DIFINITION;
 
+    // 100 is a tentative value
+    variable_node->value_string = (char**)malloc(sizeof(char*)*100);
+    for(int i=0; i<100; i++)
+        variable_node->value_string[i] = (char*)malloc(sizeof(char)*10);
+    
+    variable_node->number_of_value_tokens = 0;
+
     return variable_node;
 }
 

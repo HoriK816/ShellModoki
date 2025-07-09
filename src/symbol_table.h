@@ -11,6 +11,6 @@ symbol_table_t* CreateSymbolTable(void);
 void InitializeSymbolTable(symbol_table_t *symbol_table);
 void FreeSymbolTable(symbol_table_t *symbol_table);
 
-void StoreVaribale(variable_define_node_t *variable_node,
+void StoreVariable(variable_define_node_t *variable_node,
                    symbol_table_t* symbol_table);
 
