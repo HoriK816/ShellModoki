@@ -45,6 +45,8 @@
 
 # fizzbuzz 
 
+<img src="imgs/fizzbuzz.png">
+
 以下のようなfizzbuzzスクリプト(bash)を入力することで，fizzbuzzが実行できます.
 上画像のような出力結果が得られます．
 
@@ -68,4 +70,33 @@ done
 
 # ソースファイルの一覧
 
+* arithmetic_calculator.c (.h)
+    * 算術演算のためのプログラムです．
+
+* debug_functions.c (.h)
+    * デバッグ用の関数郡です．
+
+* executor.c (.h)
+    * 構文解析の結果を踏まえて，shellスクリプトを実行するプログラムです．
+
+* history.c (.h)
+    * historyコマンドを実装しているプログラムです．
+
+* parse_tree_nodes.c (.h)
+    * 構文解析木を構成するノード郡を定義しているプログラムです．
+
+* parser.c (.h)
+    * トークン列を受けて構文解析をするプログラムです．
+
+* printer.c (.h)
+    * プロンプトを画面に出力するプログラムです．
+
+* shell_modoki.c (.h)
+    * main プログラムです．
+
+* symbol_table.c (.h)
+    * 記号テーブルを実装しているプログラムです．
+
+* tokenizer.c (.h)
+    * ユーザ入力をトーカナイズするプログラムです．
 
