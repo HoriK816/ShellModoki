@@ -45,7 +45,7 @@
 
 # fizzbuzz 
 
-<img src="imgs/fizzbuzz.png">
+<img src="/imgs/fizzbuzz.png">
 
 以下のようなfizzbuzzスクリプト(bash)を入力することで，fizzbuzzが実行できます.
 上画像のような出力結果が得られます．
