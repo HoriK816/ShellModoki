@@ -24,6 +24,7 @@ void PrintHistory()
     char next_cc;
     int line_number = 1;
 
+    /* dump the history to stdout*/
     while((cc = fgetc(history_file)) != EOF){
         // print line number
         if(cc == '\n'){

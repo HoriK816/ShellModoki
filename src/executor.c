@@ -10,11 +10,27 @@
 
 void ExecTree(ast_node_t * node, symbol_table_t *symbol_table)
 {
-
+    /* root nodes execute all children nodes */
     if(node->type == ROOT)
     {
-
+        int cursor = 0;
+        while(cursor < node->number_of_children)
+        {
+            ast_node_t *next_node;
+            next_node  = (ast_node_t *)node->children[cursor];
+            if(next_node->type == IF)
+            {
+                cursor = ProcessIFNode(node, cursor, 
+                                  node->number_of_children, symbol_table);
+            }
+            else
+            {
+                ExecTree(next_node, symbol_table);
+                cursor++;
+            }
+        }
     }
+    /* if node executes process nodes if the condition nodes returns */
     else if(node->type == IF)
     {
         if_node_t* if_node;
@@ -77,23 +93,6 @@ void ExecTree(ast_node_t * node, symbol_table_t *symbol_table)
 
         StoreVariable(variable_node, symbol_table);
         return;
-    }
-
-    int cursor = 0;
-    while(cursor < node->number_of_children)
-    {
-        ast_node_t *next_node;
-        next_node  = (ast_node_t *)node->children[cursor];
-        if(next_node->type == IF)
-        {
-            cursor = ProcessIFNode(node, cursor, 
-                              node->number_of_children, symbol_table);
-        }
-        else
-        {
-            ExecTree(next_node, symbol_table);
-            cursor++;
-        }
     }
 }
 

@@ -30,7 +30,6 @@ ast_node_t* CreateSubTreeNode()
 
 condition_node_t* CreateConditionNode()
 {
-
     condition_node_t *condition_node 
         = (condition_node_t*)malloc(sizeof(condition_node_t));
     if(condition_node == NULL)
@@ -43,6 +42,7 @@ condition_node_t* CreateConditionNode()
     condition_node->node.type = CONDITION;
     condition_node->node.number_of_children = 0;
 
+    // 10 is a tentative value
     condition_node->operation = (char*)malloc(sizeof(char) * 10); 
     if(condition_node->operation == NULL)
     {
@@ -56,6 +56,7 @@ condition_node_t* CreateConditionNode()
     condition_node->operand2 = (char**)malloc(sizeof(char*)*100);
     for(int i=0; i<100; i++)
     {
+        // 10 is a tentative value
         condition_node->operand1[i] = (char*)malloc(sizeof(char)*10);
         condition_node->operand2[i] = (char*)malloc(sizeof(char)*10);
     }

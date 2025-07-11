@@ -8,12 +8,12 @@
 void PrintPrompt()
 {
     // get login is not working on WSL
-    char *user_name;
-    if((user_name = getlogin()) == NULL)
-    {
-        fprintf(stderr, "getlogin() error\n");
-        exit(EXIT_FAILURE);
-    }
+    /*char *user_name;*/
+    /*if((user_name = getlogin()) == NULL)*/
+    /*{*/
+        /*fprintf(stderr, "getlogin() error\n");*/
+        /*exit(EXIT_FAILURE);*/
+    /*}*/
 
     int rc;
     char host_name[256];
@@ -31,12 +31,12 @@ void PrintPrompt()
     }
 
     // this prompt is not working on WSL
-    fprintf(stdout, "[%s@ %s %s ]$ ", user_name,
-                                      host_name,
-                                      current_dir);
+    /*fprintf(stdout, "[%s@ %s %s ]$ ", user_name,*/
+                                      /*host_name,*/
+                                      /*current_dir);*/
 
     // prompt for wsl env 
-    /* fprintf(stdout, " @ %s %s]#", host_name, current_dir);*/
+    fprintf(stdout, " @ %s %s]#", host_name, current_dir);
     // free(user_name);
     free(current_dir);
 }

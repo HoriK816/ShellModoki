@@ -5,20 +5,22 @@
 
 #include "arithmetic_calculator.h"
 
+/* return the evaluated value */
 int EvaluateArithmeticTree(arithmetic_node_t* node,
                            symbol_table_t *symbol_table)
 {
     int result = 0;
 
+    /* It isn't arithmetic expression but a number */
     if(node->priority == NUMBER)
     {
         result = GetNodeValue(node, symbol_table);
         return result;
     }
      
+    /* grab values for calculation */
     int left_value;
     int right_value;
-
     if(node->left_tree->priority == 3 && node->right_tree->priority == 3)
     {
         left_value  = GetNodeValue(node->left_tree, symbol_table);
@@ -40,36 +42,32 @@ int EvaluateArithmeticTree(arithmetic_node_t* node,
         right_value = EvaluateArithmeticTree(node->right_tree, symbol_table);
     }
 
+    /* execute caulculation */
     if(strcmp(node->operation, "+") == 0)
-    {
         result = left_value + right_value;
-    }
+
     else if(strcmp(node->operation, "-") == 0)
-    {
         result = left_value - right_value;
-    }
+
     else if(strcmp(node->operation, "*") == 0)
-    {
         result = left_value * right_value;
-    }
+
     else if(strcmp(node->operation, "/") == 0)
-    {
         result = left_value / right_value;
-    }
+
     else if(strcmp(node->operation, "%") == 0)
-    {
         result = left_value % right_value;
-    }
 
     return result;
-
 }
 
+/* extract value from nodes */
 int GetNodeValue(arithmetic_node_t* node, symbol_table_t* symbol_table)
 {
     int value;
     if(node->is_variable)
     {
+        /* seek the corresponded value  from symbol_table */
         for(int i=0; i<symbol_table->number_of_records;i++)
         {
             if(strcmp(node->operation, symbol_table->symbol_name[i]) == 0)
@@ -77,7 +75,7 @@ int GetNodeValue(arithmetic_node_t* node, symbol_table_t* symbol_table)
         }
     }
     else
-        value = node->value;
+        value = node->value;  // just a value 
 
     return value;
 }
@@ -111,8 +109,10 @@ arithmetic_node_t* BuildArithmeticTree(char **tokens, int arithmetic_cursor,
     return root;
 }
 
+/* create an new operator node and insert it into the tree */
 arithmetic_node_t* InsertOperator(char **tokens, int *current_cursor, 
-                    arithmetic_node_t* root, int number_of_tokens)
+                                  arithmetic_node_t* root,
+                                  int number_of_tokens)
 {
     int *cursor = current_cursor;
 
@@ -134,6 +134,7 @@ arithmetic_node_t* InsertOperator(char **tokens, int *current_cursor,
 
     *cursor += 1; // consume an operator
 
+    /* insert the operator to the tree*/
     if(new_node->priority <= root->priority)
     {
         arithmetic_node_t* temp_node;
@@ -160,7 +161,7 @@ arithmetic_node_t* InsertOperator(char **tokens, int *current_cursor,
     return root;
 }
 
-
+/* create an new operand node and insert it into the tree */
 arithmetic_node_t* InsertOperand(char **tokens, int *current_cursor, 
                                  arithmetic_node_t* root, int number_of_tokens)
 {
@@ -181,13 +182,12 @@ arithmetic_node_t* InsertOperand(char **tokens, int *current_cursor,
 
     *cursor += 1; // consume an operand 
 
-    /* insert */
+    /* insert the operand to the tree */
     if(root == NULL)                
         root = new_node;
     else
     {
         arithmetic_node_t *insert_spot = root;
-
         while(true)
         {
             if(insert_spot->right_tree == NULL)
@@ -196,12 +196,14 @@ arithmetic_node_t* InsertOperand(char **tokens, int *current_cursor,
                 insert_spot = insert_spot->right_tree;
         }
 
-        insert_spot->right_tree = (arithmetic_node_t*)malloc(sizeof(arithmetic_node_t));
+        insert_spot->right_tree 
+            = (arithmetic_node_t*)malloc(sizeof(arithmetic_node_t));
         insert_spot->right_tree = new_node;
     }
     return root;
 }
 
+/* create an new node */
 arithmetic_node_t* CreateArithmeticNode()
 {
     arithmetic_node_t* node; 
@@ -217,7 +219,7 @@ arithmetic_node_t* CreateArithmeticNode()
     return node;
 }
 
-
+/* dump the tree for debugging */
 void DumpArithmeticTree(arithmetic_node_t* node, int level, 
                         symbol_table_t* symbol_table)
 {
@@ -257,5 +259,4 @@ void DumpArithmeticTree(arithmetic_node_t* node, int level,
         DumpArithmeticTree(node->right_tree, level, symbol_table);
     if(node->left_tree != NULL)
         DumpArithmeticTree(node->left_tree,  level, symbol_table);
-
 }
